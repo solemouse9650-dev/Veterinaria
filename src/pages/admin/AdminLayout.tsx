@@ -6,7 +6,6 @@ import {
   LayoutDashboard,
   LogOut,
   MessageSquareQuote,
-  PawPrint,
   Settings,
   Stethoscope,
   Clock3,
@@ -76,12 +75,16 @@ export function AdminLayout() {
     <div className="min-h-screen bg-[#f3f7f6] lg:grid lg:grid-cols-[260px_1fr]">
       <aside className="bg-ink text-white lg:sticky lg:top-0 lg:h-screen lg:overflow-y-auto">
         <div className="flex items-center gap-3 border-b border-white/10 px-5 py-5">
-          <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-600">
-            <PawPrint className="h-5 w-5" />
-          </span>
+          <img
+            src="/logo.png"
+            alt="EcoVet"
+            className="h-11 w-11 rounded-full object-cover ring-1 ring-white/20"
+          />
           <div>
-            <p className="font-display text-lg font-semibold">EcoVet Admin</p>
-            <p className="text-xs text-white/55">Panel de gestión</p>
+            <p className="font-display text-lg font-bold tracking-tight">EcoVet Admin</p>
+            <p className="text-xs uppercase tracking-[0.14em] text-white/55">
+              Panel de gestión
+            </p>
           </div>
         </div>
         <nav className="space-y-1 p-3" aria-label="Admin">

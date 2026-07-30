@@ -12,7 +12,7 @@ export function SchemaOrg() {
     url: 'https://ecovet.clinic',
     telephone: site.phone,
     email: site.email,
-    image: 'https://ecovet.clinic/favicon.svg',
+    image: 'https://ecovet.clinic/logo.png',
     address: {
       '@type': 'PostalAddress',
       streetAddress: site.address,

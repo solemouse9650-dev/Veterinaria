@@ -13,7 +13,7 @@ import type {
 
 export const siteInfo: SiteInfo = {
   name: 'EcoVet',
-  tagline: 'Cuidado veterinario premium con alma cercana',
+  tagline: 'Cuidado veterinario cercano, natural y profesional',
   description:
     'EcoVet es una clínica veterinaria integral dedicada al bienestar de perros, gatos, animales exóticos y de granja. Combinamos tecnología, experiencia y trato humano para acompañarte en cada etapa de la vida de tu mascota.',
   phone: '+54 11 4567-8900',

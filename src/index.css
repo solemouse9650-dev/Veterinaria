@@ -1,27 +1,28 @@
 @import "tailwindcss";
 
 @theme {
-  --font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
-  --font-display: "Fraunces", Georgia, serif;
+  --font-sans: "DM Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Montserrat", ui-sans-serif, system-ui, sans-serif;
 
-  --color-brand-50: #f0fdfa;
-  --color-brand-100: #ccfbf1;
-  --color-brand-200: #99f6e4;
-  --color-brand-300: #5eead4;
-  --color-brand-400: #2dd4bf;
-  --color-brand-500: #14b8a6;
-  --color-brand-600: #0f766e;
-  --color-brand-700: #0f5f5a;
-  --color-brand-800: #115e59;
-  --color-brand-900: #134e4a;
+  /* Extraídos del logo EcoVet — verde musgo */
+  --color-brand-50: #f5f7f3;
+  --color-brand-100: #e7ede3;
+  --color-brand-200: #cfdcc8;
+  --color-brand-300: #a8bda0;
+  --color-brand-400: #7d9874;
+  --color-brand-500: #5b7853;
+  --color-brand-600: #4d6846;
+  --color-brand-700: #3f5539;
+  --color-brand-800: #34462f;
+  --color-brand-900: #2b3a27;
 
-  --color-ink: #0b1f1e;
-  --color-muted: #5b6f6d;
+  --color-ink: #243022;
+  --color-muted: #6a7465;
   --color-surface: #ffffff;
-  --color-canvas: #f4faf9;
-  --color-line: #d7e8e5;
-  --color-accent: #0284c7;
-  --color-warm: #ea580c;
+  --color-canvas: #f7f8f5;
+  --color-line: #e1e6dc;
+  --color-accent: #6f8f68;
+  --color-warm: #c4a574;
 }
 
 html {
@@ -34,8 +35,8 @@ body {
   font-family: var(--font-sans);
   color: var(--color-ink);
   background:
-    radial-gradient(ellipse 80% 50% at 10% -10%, rgba(20, 184, 166, 0.12), transparent),
-    radial-gradient(ellipse 60% 40% at 90% 0%, rgba(2, 132, 199, 0.08), transparent),
+    radial-gradient(ellipse 70% 45% at 8% -8%, rgba(91, 120, 83, 0.1), transparent),
+    radial-gradient(ellipse 50% 35% at 95% 5%, rgba(111, 143, 104, 0.08), transparent),
     var(--color-canvas);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -69,6 +70,7 @@ body {
   font-size: 1.5rem;
   margin-top: 1.75rem;
   margin-bottom: 0.75rem;
+  font-weight: 700;
 }
 
 .prose-blog p {
@@ -84,17 +86,13 @@ body {
   margin-bottom: 1rem;
 }
 
-.admin-shell {
-  background: #0b1f1e;
-}
-
 ::-webkit-scrollbar {
   width: 10px;
   height: 10px;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #9cc9c3;
+  background: #a8bda0;
   border-radius: 999px;
 }
 

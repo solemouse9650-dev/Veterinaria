@@ -99,7 +99,7 @@ export function AdminDashboard() {
                 <XAxis dataKey="name" tick={{ fontSize: 11 }} interval={0} angle={-15} textAnchor="end" height={60} />
                 <YAxis allowDecimals={false} />
                 <Tooltip />
-                <Bar dataKey="total" fill="#0f766e" radius={[8, 8, 0, 0]} />
+                <Bar dataKey="total" fill="#5b7853" radius={[8, 8, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </div>

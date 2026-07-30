@@ -6,6 +6,7 @@ import {
   Share2,
 } from 'lucide-react'
 import { Link } from 'react-router-dom'
+import { Logo } from '@/components/brand/Logo'
 import { useSite } from '@/contexts/SiteContext'
 import { whatsappUrl } from '@/lib/utils'
 
@@ -17,8 +18,18 @@ export function Footer() {
     <footer className="border-t border-line bg-ink text-white">
       <div className="container-page section-pad grid gap-10 md:grid-cols-2 lg:grid-cols-4">
         <div>
-          <p className="font-display text-2xl font-semibold">{site.name}</p>
-          <p className="mt-3 text-sm leading-relaxed text-white/70">
+          <div className="flex items-center gap-3">
+            <Logo imgClassName="h-16 w-16 ring-white/25" />
+            <div>
+              <p className="font-display text-2xl font-bold tracking-tight text-white">
+                EcoVet
+              </p>
+              <p className="text-[10px] font-medium uppercase tracking-[0.18em] text-brand-200">
+                Clínica Veterinaria
+              </p>
+            </div>
+          </div>
+          <p className="mt-4 text-sm leading-relaxed text-white/70">
             {site.tagline}. Atención veterinaria integral con enfoque preventivo y
             trato humano.
           </p>

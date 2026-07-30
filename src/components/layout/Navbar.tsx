@@ -1,10 +1,11 @@
 import { AnimatePresence, motion } from 'framer-motion'
-import { CalendarDays, Menu, MessageCircle, PawPrint, X } from 'lucide-react'
+import { CalendarDays, Menu, MessageCircle, X } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { Link, NavLink } from 'react-router-dom'
+import { Logo } from '@/components/brand/Logo'
+import { Button } from '@/components/ui/Button'
 import { useSite } from '@/contexts/SiteContext'
 import { cn, whatsappUrl } from '@/lib/utils'
-import { Button } from '@/components/ui/Button'
 
 const links = [
   { to: '/', label: 'Inicio' },
@@ -47,16 +48,15 @@ export function Navbar() {
       )}
     >
       <div className="container-page flex h-[72px] items-center justify-between gap-4">
-        <Link to="/" className="group flex items-center gap-2.5 focus-ring rounded-xl">
-          <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-brand-600 text-white shadow-lg shadow-brand-600/25 transition group-hover:scale-105">
-            <PawPrint className="h-5 w-5" />
-          </span>
-          <span>
-            <span className="block font-display text-xl font-semibold leading-none text-ink">
-              {site.name}
-            </span>
-            <span className="text-xs font-medium text-muted">Clínica Veterinaria</span>
-          </span>
+        <Link
+          to="/"
+          className="group focus-ring rounded-full transition hover:opacity-90"
+          aria-label="EcoVet — Ir al inicio"
+        >
+          <Logo
+            showWordmark
+            imgClassName="h-12 w-12 transition duration-300 group-hover:scale-105"
+          />
         </Link>
 
         <nav className="hidden items-center gap-1 xl:flex" aria-label="Principal">

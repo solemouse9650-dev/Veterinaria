@@ -1,9 +1,9 @@
 import { zodResolver } from '@hookform/resolvers/zod'
-import { PawPrint } from 'lucide-react'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { Navigate } from 'react-router-dom'
 import { z } from 'zod'
+import { Logo } from '@/components/brand/Logo'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner'
@@ -66,19 +66,19 @@ export function AdminLogin() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-brand-900 via-ink to-brand-800 px-4">
+    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-brand-900 via-ink to-brand-700 px-4">
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className="w-full max-w-md rounded-[2rem] border border-white/10 bg-white p-8 shadow-2xl"
+        className="w-full max-w-md rounded-[2rem] border border-line bg-white p-8 shadow-2xl"
       >
-        <div className="mb-6 flex items-center gap-3">
-          <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-brand-600 text-white">
-            <PawPrint className="h-6 w-6" />
-          </span>
-          <div>
-            <h1 className="font-display text-2xl font-semibold">EcoVet Admin</h1>
-            <p className="text-sm text-muted">Acceso autorizado</p>
-          </div>
+        <div className="mb-6 flex flex-col items-center text-center">
+          <Logo imgClassName="h-20 w-20" />
+          <h1 className="mt-4 font-display text-2xl font-bold tracking-tight text-brand-700">
+            EcoVet Admin
+          </h1>
+          <p className="mt-1 text-xs font-medium uppercase tracking-[0.18em] text-brand-500">
+            Acceso autorizado
+          </p>
         </div>
         <div className="space-y-4">
           <Input

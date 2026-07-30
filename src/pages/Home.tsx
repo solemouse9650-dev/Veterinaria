@@ -5,7 +5,6 @@ import {
   HeartHandshake,
   MessageCircle,
   ShieldCheck,
-  Sparkles,
   Stethoscope,
 } from 'lucide-react'
 import { useRef } from 'react'
@@ -53,42 +52,53 @@ export function Home() {
           style={{ opacity }}
           className="relative container-page flex min-h-[100svh] flex-col justify-center pb-16 pt-28"
         >
-          <motion.p
+          <motion.div
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
-            className="mb-4 inline-flex w-fit items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-1.5 text-sm font-medium text-brand-100 backdrop-blur"
+            className="mb-6"
           >
-            <Sparkles className="h-4 w-4" />
-            {site.name} · Clínica Veterinaria Premium
-          </motion.p>
+            <img
+              src="/logo.png"
+              alt="EcoVet Clínica Veterinaria"
+              className="h-28 w-28 rounded-full object-cover shadow-2xl ring-4 ring-white/25 md:h-36 md:w-36"
+            />
+          </motion.div>
           <motion.h1
             initial={{ opacity: 0, y: 24 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="max-w-3xl font-display text-4xl font-semibold leading-tight text-white md:text-6xl lg:text-7xl"
+            className="max-w-3xl font-display text-5xl font-bold tracking-tight leading-none text-white md:text-7xl lg:text-8xl"
           >
-            {site.name}
+            EcoVet
           </motion.h1>
+          <motion.p
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.14 }}
+            className="mt-3 text-sm font-medium uppercase tracking-[0.28em] text-brand-200"
+          >
+            Clínica Veterinaria
+          </motion.p>
           <motion.p
             initial={{ opacity: 0, y: 24 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.18 }}
-            className="mt-4 max-w-2xl font-display text-2xl text-brand-100 md:text-3xl"
+            transition={{ delay: 0.2 }}
+            className="mt-6 max-w-2xl font-display text-xl font-semibold text-white md:text-2xl"
           >
             {hero.title}
           </motion.p>
           <motion.p
             initial={{ opacity: 0, y: 24 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.26 }}
-            className="mt-5 max-w-xl text-lg leading-relaxed text-white/80"
+            transition={{ delay: 0.28 }}
+            className="mt-4 max-w-xl text-lg leading-relaxed text-white/80"
           >
             {hero.subtitle}
           </motion.p>
           <motion.div
             initial={{ opacity: 0, y: 24 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.34 }}
+            transition={{ delay: 0.36 }}
             className="mt-8 flex flex-wrap gap-3"
           >
             <Link to="/reservas">
@@ -293,9 +303,15 @@ export function Home() {
       </section>
 
       <section className="section-pad">
-        <div className="container-page overflow-hidden rounded-[2rem] bg-gradient-to-br from-brand-700 via-brand-600 to-accent px-8 py-14 text-center text-white md:px-16">
+        <div className="container-page overflow-hidden rounded-[2rem] bg-gradient-to-br from-brand-800 via-brand-600 to-brand-500 px-8 py-14 text-center text-white md:px-16">
           <AnimatedSection>
-            <h2 className="font-display text-3xl font-semibold md:text-5xl">
+            <img
+              src="/logo.png"
+              alt=""
+              aria-hidden
+              className="mx-auto mb-6 h-16 w-16 rounded-full object-cover ring-2 ring-white/30"
+            />
+            <h2 className="font-display text-3xl font-bold tracking-tight md:text-5xl">
               Reservá el turno de tu mascota hoy
             </h2>
             <p className="mx-auto mt-4 max-w-2xl text-white/85">

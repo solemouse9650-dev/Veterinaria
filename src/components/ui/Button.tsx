@@ -12,12 +12,12 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 
 const variants: Record<Variant, string> = {
   primary:
-    'bg-brand-600 text-white shadow-lg shadow-brand-600/20 hover:bg-brand-700 hover:-translate-y-0.5',
+    'bg-brand-500 text-white shadow-lg shadow-brand-500/25 hover:bg-brand-600 hover:-translate-y-0.5',
   secondary:
-    'bg-ink text-white hover:bg-brand-900 hover:-translate-y-0.5',
+    'bg-ink text-white hover:bg-brand-800 hover:-translate-y-0.5',
   outline:
-    'border border-brand-600/30 bg-white/80 text-brand-800 hover:border-brand-600 hover:bg-brand-50',
-  ghost: 'text-brand-800 hover:bg-brand-50',
+    'border border-brand-500/30 bg-white/80 text-brand-700 hover:border-brand-500 hover:bg-brand-50',
+  ghost: 'text-brand-700 hover:bg-brand-50',
   whatsapp:
     'bg-[#25D366] text-white shadow-lg shadow-[#25D366]/25 hover:bg-[#1ebe57] hover:-translate-y-0.5',
   danger: 'bg-red-600 text-white hover:bg-red-700',
