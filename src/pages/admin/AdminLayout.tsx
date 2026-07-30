@@ -13,13 +13,13 @@ import {
   Users,
   Database,
 } from 'lucide-react'
-import { NavLink, Outlet, Navigate } from 'react-router-dom'
-import { useAuth } from '@/contexts/AuthContext'
+import { useState } from 'react'
+import { NavLink, Navigate, Outlet } from 'react-router-dom'
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner'
+import { useAuth } from '@/contexts/AuthContext'
+import { useSite } from '@/contexts/SiteContext'
 import { cn } from '@/lib/utils'
 import { seedDatabase } from '@/services/firestore'
-import { useState } from 'react'
-import { useSite } from '@/contexts/SiteContext'
 
 const links = [
   { to: '/admin', label: 'Dashboard', icon: LayoutDashboard, end: true },

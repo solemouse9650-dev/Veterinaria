@@ -1,5 +1,6 @@
 import {
   createContext,
+  useCallback,
   useContext,
   useEffect,
   useMemo,
@@ -13,7 +14,7 @@ import {
   signOut,
   type User,
 } from 'firebase/auth'
-import { ADMIN_UID, auth } from '@/lib/firebase'
+import { auth, isAuthorizedAdmin } from '@/lib/firebase'
 
 interface AuthContextValue {
   user: User | null
@@ -25,6 +26,32 @@ interface AuthContextValue {
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null)
+
+function mapAuthError(error: unknown): string {
+  const code =
+    typeof error === 'object' && error && 'code' in error
+      ? String((error as { code: string }).code)
+      : ''
+
+  switch (code) {
+    case 'auth/invalid-credential':
+    case 'auth/wrong-password':
+    case 'auth/user-not-found':
+    case 'auth/invalid-login-credentials':
+      return 'Correo o contraseña incorrectos.'
+    case 'auth/too-many-requests':
+      return 'Demasiados intentos. Probá más tarde o recuperá la contraseña.'
+    case 'auth/network-request-failed':
+      return 'Error de red. Verificá tu conexión e intentá de nuevo.'
+    case 'auth/user-disabled':
+      return 'Esta cuenta está deshabilitada.'
+    case 'auth/invalid-email':
+      return 'El correo no es válido.'
+    default:
+      if (error instanceof Error && error.message) return error.message
+      return 'No se pudo iniciar sesión. Intentá nuevamente.'
+  }
+}
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
@@ -38,22 +65,39 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return unsub
   }, [])
 
+  const login = useCallback(async (email: string, password: string) => {
+    try {
+      const cred = await signInWithEmailAndPassword(
+        auth,
+        email.trim().toLowerCase(),
+        password,
+      )
+      if (!isAuthorizedAdmin(cred.user)) {
+        await signOut(auth)
+        throw new Error('Usuario no autorizado para el panel administrativo.')
+      }
+    } catch (error) {
+      throw new Error(mapAuthError(error))
+    }
+  }, [])
+
+  const logout = useCallback(() => signOut(auth), [])
+
+  const resetPassword = useCallback(
+    (email: string) => sendPasswordResetEmail(auth, email.trim().toLowerCase()),
+    [],
+  )
+
   const value = useMemo<AuthContextValue>(
     () => ({
       user,
       loading,
-      isAdmin: !!user && user.uid === ADMIN_UID,
-      login: async (email, password) => {
-        const cred = await signInWithEmailAndPassword(auth, email, password)
-        if (cred.user.uid !== ADMIN_UID) {
-          await signOut(auth)
-          throw new Error('Usuario no autorizado para el panel administrativo.')
-        }
-      },
-      logout: () => signOut(auth),
-      resetPassword: (email) => sendPasswordResetEmail(auth, email),
+      isAdmin: isAuthorizedAdmin(user),
+      login,
+      logout,
+      resetPassword,
     }),
-    [user, loading],
+    [user, loading, login, logout, resetPassword],
   )
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

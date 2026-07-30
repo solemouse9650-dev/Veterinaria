@@ -1,7 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
-import { Navigate } from 'react-router-dom'
+import { Navigate, useNavigate } from 'react-router-dom'
 import { z } from 'zod'
 import { Logo } from '@/components/brand/Logo'
 import { Button } from '@/components/ui/Button'
@@ -17,7 +17,8 @@ const schema = z.object({
 type FormData = z.infer<typeof schema>
 
 export function AdminLogin() {
-  const { login, resetPassword, user, loading, isAdmin } = useAuth()
+  const { login, resetPassword, user, loading, isAdmin, logout } = useAuth()
+  const navigate = useNavigate()
   const [error, setError] = useState('')
   const [info, setInfo] = useState('')
   const {
@@ -25,7 +26,19 @@ export function AdminLogin() {
     handleSubmit,
     getValues,
     formState: { errors, isSubmitting },
-  } = useForm<FormData>({ resolver: zodResolver(schema) })
+  } = useForm<FormData>({
+    resolver: zodResolver(schema),
+    defaultValues: {
+      email: '',
+      password: '',
+    },
+  })
+
+  useEffect(() => {
+    if (!loading && user && isAdmin) {
+      navigate('/admin', { replace: true })
+    }
+  }, [loading, user, isAdmin, navigate])
 
   if (loading) {
     return (
@@ -43,7 +56,12 @@ export function AdminLogin() {
     setError('')
     setInfo('')
     try {
+      // Si hay otra sesión no autorizada, la cerramos primero
+      if (user && !isAdmin) {
+        await logout()
+      }
       await login(data.email, data.password)
+      navigate('/admin', { replace: true })
     } catch (e) {
       setError(e instanceof Error ? e.message : 'No se pudo iniciar sesión')
     }
@@ -70,6 +88,7 @@ export function AdminLogin() {
       <form
         onSubmit={handleSubmit(onSubmit)}
         className="w-full max-w-md rounded-[2rem] border border-line bg-white p-8 shadow-2xl"
+        noValidate
       >
         <div className="mb-6 flex flex-col items-center text-center">
           <Logo imgClassName="h-20 w-20" />
@@ -84,16 +103,22 @@ export function AdminLogin() {
           <Input
             label="Correo"
             type="email"
+            autoComplete="email"
             {...register('email')}
             error={errors.email?.message}
           />
           <Input
             label="Contraseña"
             type="password"
+            autoComplete="current-password"
             {...register('password')}
             error={errors.password?.message}
           />
-          {error && <p className="text-sm text-red-600">{error}</p>}
+          {error && (
+            <p className="rounded-xl bg-red-50 px-3 py-2 text-sm text-red-600" role="alert">
+              {error}
+            </p>
+          )}
           {info && <p className="text-sm text-brand-700">{info}</p>}
           <Button type="submit" className="w-full" disabled={isSubmitting}>
             {isSubmitting ? 'Ingresando…' : 'Iniciar sesión'}
