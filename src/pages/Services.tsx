@@ -24,7 +24,7 @@ export function Services() {
         description="Consultas, vacunación, cirugías, diagnóstico, emergencias, peluquería y más en EcoVet."
         path="/servicios"
       />
-      <section className="section-pad pt-32">
+      <section className="section-pad page-top">
         <div className="container-page">
           <SectionHeading
             eyebrow="Servicios"

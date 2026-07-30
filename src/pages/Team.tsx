@@ -13,24 +13,24 @@ export function Team() {
         description="Conocé al equipo veterinario de EcoVet: experiencia, especialidades y horarios."
         path="/equipo"
       />
-      <section className="section-pad pt-32">
+      <section className="section-pad page-top">
         <div className="container-page">
           <SectionHeading
             eyebrow="Equipo veterinario"
             title="Profesionales con vocación y experiencia"
             description="Cada integrante aporta una mirada especializada para un cuidado integral."
           />
-          <div className="grid gap-6 md:grid-cols-2">
+          <div className="grid gap-4 sm:gap-6 md:grid-cols-2">
             {team.map((member, i) => (
               <AnimatedSection key={member.id} delay={i * 0.06}>
-                <article className="grid overflow-hidden rounded-[2rem] border border-line bg-white sm:grid-cols-[220px_1fr]">
+                <article className="grid overflow-hidden rounded-[1.5rem] border border-line bg-white sm:rounded-[2rem] md:grid-cols-[180px_1fr] lg:grid-cols-[220px_1fr]">
                   <img
                     src={member.image}
                     alt={`Foto de ${member.name}`}
-                    className="h-64 w-full object-cover sm:h-full"
+                    className="h-56 w-full object-cover sm:h-64 md:h-full"
                   />
-                  <div className="p-6">
-                    <h2 className="font-display text-2xl font-semibold">{member.name}</h2>
+                  <div className="p-4 sm:p-6">
+                    <h2 className="font-display text-xl font-semibold sm:text-2xl">{member.name}</h2>
                     <p className="mt-1 text-sm font-semibold text-brand-700">
                       {member.specialty}
                     </p>

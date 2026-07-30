@@ -49,7 +49,7 @@ export function Contact() {
         description={`Contactá a ${site.name}: WhatsApp, teléfono, email, mapa y horarios.`}
         path="/contacto"
       />
-      <section className="section-pad pt-32">
+      <section className="section-pad page-top">
         <div className="container-page">
           <SectionHeading
             eyebrow="Contacto"

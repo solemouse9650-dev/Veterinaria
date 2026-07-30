@@ -15,8 +15,8 @@ export function Footer() {
   const year = new Date().getFullYear()
 
   return (
-    <footer className="border-t border-line bg-ink text-white">
-      <div className="container-page section-pad grid gap-10 md:grid-cols-2 lg:grid-cols-4">
+    <footer className="border-t border-line bg-ink text-white pb-[calc(4.5rem+env(safe-area-inset-bottom,0px))] sm:pb-0">
+      <div className="container-page section-pad grid gap-8 sm:gap-10 md:grid-cols-2 lg:grid-cols-4">
         <div>
           <div className="flex items-center gap-3">
             <Logo imgClassName="h-16 w-16 ring-white/25" />
@@ -144,9 +144,6 @@ export function Footer() {
             </Link>
             <Link to="/contacto" className="hover:text-white">
               Políticas de atención
-            </Link>
-            <Link to="/admin" className="hover:text-white">
-              Admin
             </Link>
           </div>
         </div>

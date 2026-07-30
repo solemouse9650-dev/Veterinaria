@@ -41,12 +41,14 @@ export function Counter({ value, label }: CounterProps) {
       initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
-      className="rounded-2xl border border-white/15 bg-white/10 px-5 py-6 backdrop-blur-md"
+      className="rounded-xl border border-white/15 bg-white/10 px-3 py-3 backdrop-blur-md sm:rounded-2xl sm:px-5 sm:py-6"
     >
-      <p className="font-display text-3xl font-semibold text-white md:text-4xl">
+      <p className="font-display text-xl font-semibold text-white sm:text-3xl md:text-4xl">
         {target > 0 ? `${count}${suffix}` : value}
       </p>
-      <p className="mt-2 text-sm text-white/75">{label}</p>
+      <p className="mt-1 text-[11px] leading-snug text-white/75 sm:mt-2 sm:text-sm">
+        {label}
+      </p>
     </motion.div>
   )
 }

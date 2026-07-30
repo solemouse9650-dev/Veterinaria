@@ -13,7 +13,7 @@ export function About() {
         description={`Conocé la historia, misión y valores de ${site.name}.`}
         path="/nosotros"
       />
-      <section className="relative overflow-hidden pt-28">
+      <section className="relative overflow-hidden page-top">
         <div className="absolute inset-0">
           <img
             src="https://images.unsplash.com/photo-1601758228041-f3b2795255f1?auto=format&fit=crop&w=1800&q=80"
@@ -22,14 +22,16 @@ export function About() {
           />
           <div className="absolute inset-0 bg-ink/70" />
         </div>
-        <div className="relative container-page py-24">
-          <p className="text-sm font-semibold uppercase tracking-[0.2em] text-brand-200">
+        <div className="relative container-page py-14 sm:py-20 md:py-24">
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-brand-200 sm:text-sm">
             Sobre nosotros
           </p>
-          <h1 className="mt-3 max-w-3xl font-display text-4xl font-semibold text-white md:text-6xl">
+          <h1 className="mt-3 max-w-3xl font-display text-3xl font-bold text-white sm:text-4xl md:text-6xl">
             {site.name}: medicina veterinaria con propósito
           </h1>
-          <p className="mt-5 max-w-2xl text-lg text-white/80">{site.mission}</p>
+          <p className="mt-4 max-w-2xl text-sm text-white/80 sm:mt-5 sm:text-lg">
+            {site.mission}
+          </p>
         </div>
       </section>
 

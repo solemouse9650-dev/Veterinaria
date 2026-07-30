@@ -138,7 +138,7 @@ export function ReservationsAdmin() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="font-display text-3xl font-semibold">Gestión de reservas</h1>
+        <h1 className="font-display text-2xl font-semibold sm:text-3xl">Gestión de reservas</h1>
         <p className="text-muted">
           Ver detalle completo, confirmar turnos y contactar por WhatsApp.
         </p>
@@ -172,7 +172,59 @@ export function ReservationsAdmin() {
         />
       </div>
 
-      <div className="overflow-x-auto rounded-2xl border border-line bg-white">
+      {/* Cards en móvil */}
+      <div className="space-y-3 lg:hidden">
+        {filtered.map((r) => (
+          <article
+            key={r.id}
+            className="rounded-2xl border border-line bg-white p-4 shadow-sm"
+          >
+            <div className="flex items-start justify-between gap-3">
+              <div className="min-w-0">
+                <p className="truncate font-semibold">
+                  {r.firstName} {r.lastName}
+                </p>
+                <p className="truncate text-xs text-muted">{r.email}</p>
+              </div>
+              <StatusBadge status={r.status} />
+            </div>
+            <div className="mt-3 space-y-1 text-sm text-muted">
+              <p>
+                <span className="font-medium text-ink">{r.petName}</span> · {r.serviceName}
+              </p>
+              <p>
+                {r.date} {r.time} · {r.phone}
+              </p>
+            </div>
+            <div className="mt-4 grid grid-cols-2 gap-2">
+              <Button size="sm" variant="outline" onClick={() => setSelected(r)}>
+                <Eye className="h-4 w-4" />
+                Ver
+              </Button>
+              <Button size="sm" variant="whatsapp" onClick={() => void openWhatsApp(r)}>
+                <MessageCircle className="h-4 w-4" />
+                WhatsApp
+              </Button>
+              <Button
+                size="sm"
+                className="col-span-2"
+                onClick={() => void confirmAndWhatsApp(r)}
+                disabled={working || r.status === 'confirmada'}
+              >
+                Confirmar
+              </Button>
+            </div>
+          </article>
+        ))}
+        {filtered.length === 0 && (
+          <p className="rounded-2xl border border-line bg-white p-6 text-sm text-muted">
+            No hay reservas con esos filtros.
+          </p>
+        )}
+      </div>
+
+      {/* Tabla en desktop */}
+      <div className="table-scroll hidden rounded-2xl border border-line bg-white lg:block">
         <table className="min-w-full text-left text-sm">
           <thead className="bg-canvas text-muted">
             <tr>
@@ -249,7 +301,7 @@ export function ReservationsAdmin() {
       <AnimatePresence>
         {selected && (
           <motion.div
-            className="fixed inset-0 z-[70] flex items-center justify-center bg-ink/60 p-4 backdrop-blur-sm"
+            className="fixed inset-0 z-[70] flex items-end justify-center bg-ink/60 p-0 backdrop-blur-sm sm:items-center sm:p-4"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -262,7 +314,7 @@ export function ReservationsAdmin() {
               initial={{ opacity: 0, y: 16, scale: 0.98 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: 16, scale: 0.98 }}
-              className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-3xl border border-line bg-white p-6 shadow-2xl"
+              className="max-h-[92dvh] w-full max-w-2xl overflow-y-auto rounded-t-3xl border border-line bg-white p-4 shadow-2xl sm:rounded-3xl sm:p-6"
               onClick={(e) => e.stopPropagation()}
             >
               <div className="flex items-start justify-between gap-4">

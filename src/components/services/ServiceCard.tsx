@@ -31,16 +31,16 @@ export function ServiceCard({ service, index = 0 }: ServiceCardProps) {
           {service.category}
         </span>
       </div>
-      <div className="space-y-4 p-5">
+      <div className="space-y-4 p-4 sm:p-5">
         <div>
-          <h3 className="font-display text-xl font-semibold text-ink">
+          <h3 className="font-display text-lg font-semibold text-ink sm:text-xl">
             {service.name}
           </h3>
           <p className="mt-2 text-sm leading-relaxed text-muted">
             {service.shortDescription}
           </p>
         </div>
-        <div className="flex items-center justify-between text-sm">
+        <div className="flex flex-wrap items-center justify-between gap-2 text-sm">
           <span className="font-semibold text-brand-700">
             desde {formatPrice(service.price)}
           </span>
@@ -51,16 +51,13 @@ export function ServiceCard({ service, index = 0 }: ServiceCardProps) {
               : `${service.duration} min`}
           </span>
         </div>
-        <div className="flex gap-2">
-          <Link to={`/servicios/${service.slug}`} className="flex-1">
+        <div className="grid grid-cols-1 gap-2 xs:grid-cols-2">
+          <Link to={`/servicios/${service.slug}`}>
             <Button variant="outline" className="w-full" size="sm">
               Ver detalle
             </Button>
           </Link>
-          <Link
-            to={`/reservas?servicio=${service.slug}`}
-            className="flex-1"
-          >
+          <Link to={`/reservas?servicio=${service.slug}`}>
             <Button className="w-full" size="sm">
               <CalendarDays className="h-4 w-4" />
               Reservar

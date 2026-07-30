@@ -16,7 +16,7 @@ export function FAQPage() {
         description="Respuestas sobre turnos, emergencias, castraciones, pagos y atención de animales exóticos."
         path="/preguntas-frecuentes"
       />
-      <section className="section-pad pt-32">
+      <section className="section-pad page-top">
         <div className="container-page max-w-3xl">
           <SectionHeading
             eyebrow="FAQ"

@@ -12,7 +12,7 @@ export function ServiceDetail() {
 
   if (!service) {
     return (
-      <section className="container-page section-pad pt-32 text-center">
+      <section className="container-page section-pad page-top text-center">
         <h1 className="font-display text-3xl font-semibold">Servicio no encontrado</h1>
         <Link to="/servicios" className="mt-6 inline-block">
           <Button>Volver a servicios</Button>
@@ -29,20 +29,20 @@ export function ServiceDetail() {
         path={`/servicios/${service.slug}`}
         image={service.image}
       />
-      <section className="section-pad pt-32">
-        <div className="container-page grid gap-10 lg:grid-cols-2">
-          <div className="overflow-hidden rounded-[2rem]">
+      <section className="section-pad page-top">
+        <div className="container-page grid gap-6 lg:grid-cols-2 lg:gap-10">
+          <div className="overflow-hidden rounded-[1.5rem] sm:rounded-[2rem]">
             <img
               src={service.image}
               alt={service.name}
-              className="h-full min-h-[360px] w-full object-cover"
+              className="aspect-[16/11] h-full w-full object-cover sm:aspect-auto sm:min-h-[360px]"
             />
           </div>
           <div>
-            <p className="text-sm font-semibold uppercase tracking-[0.18em] text-brand-600">
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-brand-600 sm:text-sm">
               {service.category}
             </p>
-            <h1 className="mt-3 font-display text-4xl font-semibold md:text-5xl">
+            <h1 className="mt-3 font-display text-3xl font-bold sm:text-4xl md:text-5xl">
               {service.name}
             </h1>
             <p className="mt-5 text-lg leading-relaxed text-muted">
@@ -63,9 +63,9 @@ export function ServiceDetail() {
                 </p>
               </div>
             </div>
-            <div className="mt-8 flex flex-wrap gap-3">
-              <Link to={`/reservas?servicio=${service.slug}`}>
-                <Button size="lg">
+            <div className="mt-8 flex flex-col gap-2.5 sm:flex-row sm:flex-wrap sm:gap-3">
+              <Link to={`/reservas?servicio=${service.slug}`} className="w-full sm:w-auto">
+                <Button size="lg" className="w-full sm:w-auto">
                   <CalendarDays className="h-5 w-5" />
                   Reservar este servicio
                 </Button>
@@ -77,8 +77,9 @@ export function ServiceDetail() {
                 )}
                 target="_blank"
                 rel="noreferrer"
+                className="w-full sm:w-auto"
               >
-                <Button size="lg" variant="whatsapp">
+                <Button size="lg" variant="whatsapp" className="w-full sm:w-auto">
                   <MessageCircle className="h-5 w-5" />
                   Consultar por WhatsApp
                 </Button>

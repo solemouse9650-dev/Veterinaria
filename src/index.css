@@ -4,6 +4,9 @@
   --font-sans: "DM Sans", ui-sans-serif, system-ui, sans-serif;
   --font-display: "Montserrat", ui-sans-serif, system-ui, sans-serif;
 
+  --breakpoint-xs: 380px;
+  --breakpoint-3xl: 1600px;
+
   /* Extraídos del logo EcoVet — verde musgo */
   --color-brand-50: #f5f7f3;
   --color-brand-100: #e7ede3;
@@ -27,11 +30,14 @@
 
 html {
   scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
 }
 
 body {
   margin: 0;
   min-width: 320px;
+  overflow-x: clip;
   font-family: var(--font-sans);
   color: var(--color-ink);
   background:
@@ -40,6 +46,13 @@ body {
     var(--color-canvas);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+img,
+video,
+iframe,
+svg {
+  max-width: 100%;
 }
 
 ::selection {
@@ -52,12 +65,38 @@ body {
 }
 
 .container-page {
-  width: min(1180px, calc(100% - 2rem));
+  width: min(1180px, calc(100% - 1.5rem));
   margin-inline: auto;
 }
 
+@media (min-width: 640px) {
+  .container-page {
+    width: min(1180px, calc(100% - 2rem));
+  }
+}
+
+@media (min-width: 1280px) {
+  .container-page {
+    width: min(1180px, calc(100% - 3rem));
+  }
+}
+
 .section-pad {
-  padding-block: clamp(3.5rem, 6vw, 6rem);
+  padding-block: clamp(2.75rem, 5.5vw, 6rem);
+}
+
+.page-top {
+  padding-top: calc(5.5rem + env(safe-area-inset-top, 0px));
+}
+
+@media (min-width: 768px) {
+  .page-top {
+    padding-top: calc(6.5rem + env(safe-area-inset-top, 0px));
+  }
+}
+
+.safe-bottom {
+  padding-bottom: calc(1.25rem + env(safe-area-inset-bottom, 0px));
 }
 
 .focus-ring:focus-visible {
@@ -67,7 +106,7 @@ body {
 
 .prose-blog h2 {
   font-family: var(--font-display);
-  font-size: 1.5rem;
+  font-size: clamp(1.25rem, 2.5vw, 1.5rem);
   margin-top: 1.75rem;
   margin-bottom: 0.75rem;
   font-weight: 700;
@@ -86,6 +125,12 @@ body {
   margin-bottom: 1rem;
 }
 
+/* Evita que tablas rompan el viewport en móvil */
+.table-scroll {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
 ::-webkit-scrollbar {
   width: 10px;
   height: 10px;
@@ -98,4 +143,14 @@ body {
 
 ::-webkit-scrollbar-track {
   background: transparent;
+}
+
+@media (max-width: 639px) {
+  .hide-scrollbar {
+    scrollbar-width: none;
+  }
+
+  .hide-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
 }

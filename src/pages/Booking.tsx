@@ -146,7 +146,7 @@ export function Booking() {
         description="Reservá tu turno veterinario online en EcoVet de forma rápida y segura."
         path="/reservas"
       />
-      <section className="section-pad pt-32">
+      <section className="section-pad page-top">
         <div className="container-page max-w-4xl">
           <SectionHeading
             eyebrow="Reservas"

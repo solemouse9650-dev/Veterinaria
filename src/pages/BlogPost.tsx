@@ -11,7 +11,7 @@ export function BlogPost() {
 
   if (!post) {
     return (
-      <section className="container-page section-pad pt-32 text-center">
+      <section className="container-page section-pad page-top text-center">
         <h1 className="font-display text-3xl font-semibold">Artículo no encontrado</h1>
         <Link to="/blog" className="mt-6 inline-block">
           <Button>Volver al blog</Button>
@@ -29,7 +29,7 @@ export function BlogPost() {
         image={post.image}
         type="article"
       />
-      <article className="section-pad pt-32">
+      <article className="section-pad page-top">
         <div className="container-page max-w-3xl">
           <p className="text-sm font-semibold uppercase tracking-wider text-brand-600">
             {post.category} · {formatDate(post.publishedAt)}

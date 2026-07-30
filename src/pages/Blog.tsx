@@ -15,7 +15,7 @@ export function Blog() {
         description="Consejos veterinarios, prevención, nutrición y urgencias para tutores responsables."
         path="/blog"
       />
-      <section className="section-pad pt-32">
+      <section className="section-pad page-top">
         <div className="container-page">
           <SectionHeading
             eyebrow="Blog"

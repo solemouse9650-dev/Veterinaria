@@ -21,7 +21,7 @@ export function SectionHeading({
   return (
     <AnimatedSection
       className={cn(
-        'mb-10 max-w-3xl',
+        'mb-8 max-w-3xl sm:mb-10',
         align === 'center' && 'mx-auto text-center',
         className,
       )}
@@ -29,7 +29,7 @@ export function SectionHeading({
       {eyebrow && (
         <p
           className={cn(
-            'mb-3 text-sm font-semibold uppercase tracking-[0.18em]',
+            'mb-2 text-xs font-semibold uppercase tracking-[0.16em] sm:mb-3 sm:text-sm sm:tracking-[0.18em]',
             light ? 'text-brand-200' : 'text-brand-600',
           )}
         >
@@ -38,7 +38,7 @@ export function SectionHeading({
       )}
       <h2
         className={cn(
-          'font-display text-3xl font-bold tracking-tight md:text-4xl lg:text-[2.75rem]',
+          'font-display text-[1.75rem] font-bold leading-tight tracking-tight sm:text-3xl md:text-4xl lg:text-[2.75rem]',
           light ? 'text-white' : 'text-ink',
         )}
       >
@@ -47,7 +47,7 @@ export function SectionHeading({
       {description && (
         <p
           className={cn(
-            'mt-4 text-base leading-relaxed md:text-lg',
+            'mt-3 text-sm leading-relaxed sm:mt-4 sm:text-base md:text-lg',
             light ? 'text-white/75' : 'text-muted',
           )}
         >

@@ -18,7 +18,7 @@ export function Gallery() {
         description="Recorrido visual por instalaciones, pacientes y momentos EcoVet."
         path="/galeria"
       />
-      <section className="section-pad pt-32">
+      <section className="section-pad page-top">
         <div className="container-page">
           <SectionHeading
             eyebrow="Instalaciones"
