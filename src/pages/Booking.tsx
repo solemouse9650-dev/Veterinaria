@@ -1,8 +1,8 @@
 import { zodResolver } from '@hookform/resolvers/zod'
-import { CheckCircle2 } from 'lucide-react'
+import { CheckCircle2, MessageCircle } from 'lucide-react'
 import { useMemo, useState } from 'react'
 import { useForm } from 'react-hook-form'
-import { useSearchParams } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
 import { z } from 'zod'
 import { SEO } from '@/components/seo/SEO'
 import { Button } from '@/components/ui/Button'
@@ -12,6 +12,7 @@ import { Select } from '@/components/ui/Select'
 import { Textarea } from '@/components/ui/Textarea'
 import { useSite } from '@/contexts/SiteContext'
 import { timeSlots } from '@/data/seed'
+import { formatDate, formatPrice, whatsappUrl } from '@/lib/utils'
 import { createReservation, logActivity } from '@/services/firestore'
 
 const schema = z.object({
@@ -33,12 +34,33 @@ const schema = z.object({
 
 type FormData = z.infer<typeof schema>
 
+interface BookingConfirmation {
+  id: string
+  firstName: string
+  lastName: string
+  email: string
+  phone: string
+  petName: string
+  species: string
+  breed: string
+  age: string
+  weight: string
+  serviceName: string
+  date: string
+  time: string
+  veterinarianName: string
+  notes: string
+  estimatedPrice: number
+}
+
 export function Booking() {
   const { services, team, site } = useSite()
   const [params] = useSearchParams()
   const preselectedSlug = params.get('servicio')
   const preselected = services.find((s) => s.slug === preselectedSlug)
-  const [successId, setSuccessId] = useState<string | null>(null)
+  const [confirmation, setConfirmation] = useState<BookingConfirmation | null>(
+    null,
+  )
 
   const defaultServiceId = preselected?.id || services[0]?.id || ''
 
@@ -96,7 +118,24 @@ export function Booking() {
       'reserva',
       `Nueva reserva de ${data.firstName} ${data.lastName} para ${data.petName}`,
     )
-    setSuccessId(id)
+    setConfirmation({
+      id,
+      firstName: data.firstName,
+      lastName: data.lastName,
+      email: data.email,
+      phone: data.phone,
+      petName: data.petName,
+      species: data.species,
+      breed: data.breed,
+      age: data.age,
+      weight: data.weight,
+      serviceName: service?.name || '',
+      date: data.date,
+      time: data.time,
+      veterinarianName: vet?.name || '',
+      notes: data.notes || '',
+      estimatedPrice: service?.price || 0,
+    })
     reset()
   }
 
@@ -115,22 +154,71 @@ export function Booking() {
             description={`Completá el formulario y el equipo de ${site.name} te confirmará el turno.`}
           />
 
-          {successId ? (
-            <div className="rounded-[2rem] border border-brand-200 bg-brand-50 p-8 text-center">
-              <CheckCircle2 className="mx-auto h-14 w-14 text-brand-600" />
-              <h2 className="mt-4 font-display text-3xl font-semibold text-brand-900">
-                ¡Reserva enviada con éxito!
-              </h2>
-              <p className="mt-3 text-muted">
-                Guardamos tu solicitud en nuestro sistema. Código de referencia:{' '}
-                <span className="font-semibold text-ink">{successId.slice(0, 8)}</span>
+          {confirmation ? (
+            <div className="rounded-[2rem] border border-brand-200 bg-white p-6 shadow-sm md:p-8">
+              <div className="text-center">
+                <CheckCircle2 className="mx-auto h-14 w-14 text-brand-600" />
+                <h2 className="mt-4 font-display text-3xl font-bold tracking-tight text-brand-800">
+                  ¡Reserva confirmada!
+                </h2>
+                <p className="mt-2 text-muted">
+                  Recibimos tu solicitud. Código de referencia:{' '}
+                  <span className="font-semibold text-ink">
+                    {confirmation.id.slice(0, 8).toUpperCase()}
+                  </span>
+                </p>
+              </div>
+
+              <div className="mt-8 grid gap-3 rounded-2xl border border-line bg-brand-50/60 p-5 sm:grid-cols-2">
+                <Detail label="Cliente" value={`${confirmation.firstName} ${confirmation.lastName}`} />
+                <Detail label="Teléfono" value={confirmation.phone} />
+                <Detail label="Correo" value={confirmation.email} />
+                <Detail label="Mascota" value={`${confirmation.petName} (${confirmation.species})`} />
+                <Detail label="Raza" value={confirmation.breed} />
+                <Detail label="Edad / Peso" value={`${confirmation.age} · ${confirmation.weight}`} />
+                <Detail label="Servicio" value={confirmation.serviceName} />
+                <Detail label="Veterinario/a" value={confirmation.veterinarianName} />
+                <Detail
+                  label="Fecha y hora"
+                  value={`${formatDate(confirmation.date)} · ${confirmation.time}`}
+                />
+                <Detail
+                  label="Precio de referencia"
+                  value={formatPrice(confirmation.estimatedPrice)}
+                />
+                {confirmation.notes && (
+                  <div className="sm:col-span-2">
+                    <Detail label="Observaciones" value={confirmation.notes} />
+                  </div>
+                )}
+              </div>
+
+              <p className="mt-5 text-center text-sm text-muted">
+                Estado actual: <strong className="text-brand-700">pendiente de confirmación</strong>.
+                Te contactaremos por WhatsApp o correo para validar disponibilidad.
               </p>
-              <p className="mt-2 text-sm text-muted">
-                Te contactaremos por WhatsApp o correo para confirmar disponibilidad.
-              </p>
-              <Button className="mt-6" onClick={() => setSuccessId(null)}>
-                Hacer otra reserva
-              </Button>
+
+              <div className="mt-6 flex flex-wrap justify-center gap-3">
+                <a
+                  href={whatsappUrl(
+                    site.whatsapp,
+                    `Hola EcoVet, acabo de reservar un turno (ref. ${confirmation.id.slice(0, 8).toUpperCase()}) para ${confirmation.petName}.`,
+                  )}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  <Button variant="whatsapp">
+                    <MessageCircle className="h-4 w-4" />
+                    Escribir por WhatsApp
+                  </Button>
+                </a>
+                <Button variant="outline" onClick={() => setConfirmation(null)}>
+                  Hacer otra reserva
+                </Button>
+                <Link to="/">
+                  <Button variant="ghost">Volver al inicio</Button>
+                </Link>
+              </div>
             </div>
           ) : (
             <form
@@ -141,7 +229,12 @@ export function Booking() {
                 <Input label="Nombre" {...register('firstName')} error={errors.firstName?.message} />
                 <Input label="Apellido" {...register('lastName')} error={errors.lastName?.message} />
                 <Input label="Correo" type="email" {...register('email')} error={errors.email?.message} />
-                <Input label="Teléfono" {...register('phone')} error={errors.phone?.message} />
+                <Input
+                  label="Teléfono / WhatsApp"
+                  placeholder="Ej: 11 2345-6789"
+                  {...register('phone')}
+                  error={errors.phone?.message}
+                />
                 <Input label="Nombre de la mascota" {...register('petName')} error={errors.petName?.message} />
                 <Select
                   label="Especie"
@@ -193,5 +286,16 @@ export function Booking() {
         </div>
       </section>
     </>
+  )
+}
+
+function Detail({ label, value }: { label: string; value: string }) {
+  return (
+    <div>
+      <p className="text-xs font-semibold uppercase tracking-wider text-brand-600">
+        {label}
+      </p>
+      <p className="mt-1 text-sm font-medium text-ink">{value}</p>
+    </div>
   )
 }
