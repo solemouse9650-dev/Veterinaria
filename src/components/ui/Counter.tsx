@@ -1,0 +1,52 @@
+import { useEffect, useState } from 'react'
+import { motion, useInView } from 'framer-motion'
+import { useRef } from 'react'
+
+interface CounterProps {
+  value: string
+  label: string
+}
+
+function parseTarget(value: string) {
+  const num = Number(value.replace(/[^\d]/g, ''))
+  return Number.isFinite(num) ? num : 0
+}
+
+export function Counter({ value, label }: CounterProps) {
+  const ref = useRef<HTMLDivElement>(null)
+  const inView = useInView(ref, { once: true, amount: 0.6 })
+  const target = parseTarget(value)
+  const suffix = value.replace(/[\d.,\s]/g, '')
+  const [count, setCount] = useState(0)
+
+  useEffect(() => {
+    if (!inView) return
+    if (target === 0) {
+      setCount(0)
+      return
+    }
+    let frame = 0
+    const total = 40
+    const id = window.setInterval(() => {
+      frame += 1
+      setCount(Math.round((target * frame) / total))
+      if (frame >= total) window.clearInterval(id)
+    }, 28)
+    return () => window.clearInterval(id)
+  }, [inView, target])
+
+  return (
+    <motion.div
+      ref={ref}
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      className="rounded-2xl border border-white/15 bg-white/10 px-5 py-6 backdrop-blur-md"
+    >
+      <p className="font-display text-3xl font-semibold text-white md:text-4xl">
+        {target > 0 ? `${count}${suffix}` : value}
+      </p>
+      <p className="mt-2 text-sm text-white/75">{label}</p>
+    </motion.div>
+  )
+}

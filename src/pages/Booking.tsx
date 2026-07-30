@@ -1,0 +1,197 @@
+import { zodResolver } from '@hookform/resolvers/zod'
+import { CheckCircle2 } from 'lucide-react'
+import { useMemo, useState } from 'react'
+import { useForm } from 'react-hook-form'
+import { useSearchParams } from 'react-router-dom'
+import { z } from 'zod'
+import { SEO } from '@/components/seo/SEO'
+import { Button } from '@/components/ui/Button'
+import { Input } from '@/components/ui/Input'
+import { SectionHeading } from '@/components/ui/SectionHeading'
+import { Select } from '@/components/ui/Select'
+import { Textarea } from '@/components/ui/Textarea'
+import { useSite } from '@/contexts/SiteContext'
+import { timeSlots } from '@/data/seed'
+import { createReservation, logActivity } from '@/services/firestore'
+
+const schema = z.object({
+  firstName: z.string().min(2, 'Requerido'),
+  lastName: z.string().min(2, 'Requerido'),
+  email: z.string().email('Correo inválido'),
+  phone: z.string().min(6, 'Teléfono inválido'),
+  petName: z.string().min(1, 'Requerido'),
+  species: z.string().min(1, 'Seleccioná una especie'),
+  breed: z.string().min(1, 'Requerido'),
+  age: z.string().min(1, 'Requerido'),
+  weight: z.string().min(1, 'Requerido'),
+  serviceId: z.string().min(1, 'Seleccioná un servicio'),
+  date: z.string().min(1, 'Seleccioná una fecha'),
+  time: z.string().min(1, 'Seleccioná una hora'),
+  veterinarianId: z.string().min(1, 'Seleccioná un veterinario'),
+  notes: z.string().optional(),
+})
+
+type FormData = z.infer<typeof schema>
+
+export function Booking() {
+  const { services, team, site } = useSite()
+  const [params] = useSearchParams()
+  const preselectedSlug = params.get('servicio')
+  const preselected = services.find((s) => s.slug === preselectedSlug)
+  const [successId, setSuccessId] = useState<string | null>(null)
+
+  const defaultServiceId = preselected?.id || services[0]?.id || ''
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+    reset,
+  } = useForm<FormData>({
+    resolver: zodResolver(schema),
+    defaultValues: {
+      serviceId: defaultServiceId,
+      veterinarianId: team[0]?.id || '',
+      species: 'Perro',
+      notes: '',
+    },
+  })
+
+  const serviceOptions = useMemo(
+    () => services.map((s) => ({ value: s.id, label: s.name })),
+    [services],
+  )
+  const vetOptions = useMemo(
+    () => team.map((t) => ({ value: t.id, label: t.name })),
+    [team],
+  )
+
+  const onSubmit = async (data: FormData) => {
+    const service = services.find((s) => s.id === data.serviceId)
+    const vet = team.find((t) => t.id === data.veterinarianId)
+    const now = new Date().toISOString()
+    const id = await createReservation({
+      firstName: data.firstName,
+      lastName: data.lastName,
+      email: data.email,
+      phone: data.phone,
+      petName: data.petName,
+      species: data.species,
+      breed: data.breed,
+      age: data.age,
+      weight: data.weight,
+      serviceId: data.serviceId,
+      serviceName: service?.name || '',
+      date: data.date,
+      time: data.time,
+      veterinarianId: data.veterinarianId,
+      veterinarianName: vet?.name || '',
+      notes: data.notes || '',
+      status: 'pendiente',
+      createdAt: now,
+      updatedAt: now,
+      estimatedPrice: service?.price || 0,
+    })
+    await logActivity(
+      'reserva',
+      `Nueva reserva de ${data.firstName} ${data.lastName} para ${data.petName}`,
+    )
+    setSuccessId(id)
+    reset()
+  }
+
+  return (
+    <>
+      <SEO
+        title="Reservar turno"
+        description="Reservá tu turno veterinario online en EcoVet de forma rápida y segura."
+        path="/reservas"
+      />
+      <section className="section-pad pt-32">
+        <div className="container-page max-w-4xl">
+          <SectionHeading
+            eyebrow="Reservas"
+            title="Agenda tu visita en minutos"
+            description={`Completá el formulario y el equipo de ${site.name} te confirmará el turno.`}
+          />
+
+          {successId ? (
+            <div className="rounded-[2rem] border border-brand-200 bg-brand-50 p-8 text-center">
+              <CheckCircle2 className="mx-auto h-14 w-14 text-brand-600" />
+              <h2 className="mt-4 font-display text-3xl font-semibold text-brand-900">
+                ¡Reserva enviada con éxito!
+              </h2>
+              <p className="mt-3 text-muted">
+                Guardamos tu solicitud en nuestro sistema. Código de referencia:{' '}
+                <span className="font-semibold text-ink">{successId.slice(0, 8)}</span>
+              </p>
+              <p className="mt-2 text-sm text-muted">
+                Te contactaremos por WhatsApp o correo para confirmar disponibilidad.
+              </p>
+              <Button className="mt-6" onClick={() => setSuccessId(null)}>
+                Hacer otra reserva
+              </Button>
+            </div>
+          ) : (
+            <form
+              onSubmit={handleSubmit(onSubmit)}
+              className="rounded-[2rem] border border-line bg-white p-6 md:p-8"
+            >
+              <div className="grid gap-4 md:grid-cols-2">
+                <Input label="Nombre" {...register('firstName')} error={errors.firstName?.message} />
+                <Input label="Apellido" {...register('lastName')} error={errors.lastName?.message} />
+                <Input label="Correo" type="email" {...register('email')} error={errors.email?.message} />
+                <Input label="Teléfono" {...register('phone')} error={errors.phone?.message} />
+                <Input label="Nombre de la mascota" {...register('petName')} error={errors.petName?.message} />
+                <Select
+                  label="Especie"
+                  {...register('species')}
+                  error={errors.species?.message}
+                  options={[
+                    { value: 'Perro', label: 'Perro' },
+                    { value: 'Gato', label: 'Gato' },
+                    { value: 'Exótico', label: 'Exótico' },
+                    { value: 'Granja', label: 'Animal de granja' },
+                  ]}
+                />
+                <Input label="Raza" {...register('breed')} error={errors.breed?.message} />
+                <Input label="Edad" placeholder="Ej: 3 años" {...register('age')} error={errors.age?.message} />
+                <Input label="Peso" placeholder="Ej: 12 kg" {...register('weight')} error={errors.weight?.message} />
+                <Select
+                  label="Servicio"
+                  {...register('serviceId')}
+                  error={errors.serviceId?.message}
+                  options={serviceOptions}
+                />
+                <Input label="Fecha" type="date" {...register('date')} error={errors.date?.message} />
+                <Select
+                  label="Hora"
+                  {...register('time')}
+                  error={errors.time?.message}
+                  placeholder="Seleccionar hora"
+                  options={timeSlots.map((t) => ({ value: t, label: t }))}
+                />
+                <Select
+                  label="Veterinario"
+                  {...register('veterinarianId')}
+                  error={errors.veterinarianId?.message}
+                  options={vetOptions}
+                />
+              </div>
+              <div className="mt-4">
+                <Textarea
+                  label="Observaciones"
+                  {...register('notes')}
+                  placeholder="Síntomas, alergias, preferencias…"
+                />
+              </div>
+              <Button type="submit" className="mt-6 w-full md:w-auto" size="lg" disabled={isSubmitting}>
+                {isSubmitting ? 'Guardando reserva…' : 'Confirmar reserva'}
+              </Button>
+            </form>
+          )}
+        </div>
+      </section>
+    </>
+  )
+}
