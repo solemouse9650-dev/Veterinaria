@@ -24,10 +24,20 @@ npm run preview
 
 ## Panel Admin
 
-- Ruta: `/admin`
+- Acceso solo por URL: `/admin` o `/admin/login` (no hay enlace en la web pública)
 - Login con Firebase Authentication
-- Solo el UID autorizado puede ingresar
+- Solo el usuario autorizado puede ingresar
 - Botón **Cargar datos demo** para sembrar Firestore
+
+## Deploy (importante para rutas como `/admin`)
+
+Esta es una SPA. El hosting debe reescribir todas las rutas a `index.html`:
+
+- **Vercel:** usa `vercel.json` (incluido)
+- **Netlify:** usa `public/_redirects` (incluido)
+- **Firebase Hosting:** usa `firebase.json` (incluido)
+
+Sin esa regla, entrar a `/admin` directo da **404 NOT_FOUND**.
 
 ## Firebase
 
