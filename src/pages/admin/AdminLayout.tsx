@@ -69,7 +69,7 @@ export function AdminLayout() {
     try {
       await seedDatabase()
       await refresh()
-      setSeedMsg('Contenido demo cargado en Firestore.')
+      setSeedMsg('Contenido oficial de EcoVet cargado en Firestore.')
     } catch (e) {
       setSeedMsg(
         e instanceof Error
@@ -125,7 +125,7 @@ export function AdminLayout() {
           className="flex w-full items-center gap-2 rounded-xl bg-white/10 px-3 py-2.5 text-sm hover:bg-white/15 disabled:opacity-60"
         >
           <Database className="h-4 w-4" />
-          {seeding ? 'Cargando demo…' : 'Cargar datos demo'}
+            {seeding ? 'Cargando…' : 'Cargar contenido oficial'}
         </button>
         {seedMsg && <p className="text-xs text-brand-200">{seedMsg}</p>}
         <button

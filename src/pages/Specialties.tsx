@@ -12,16 +12,21 @@ export function Specialties() {
     <>
       <SEO
         title="Especialidades"
-        description="Atención veterinaria para perros, gatos, animales exóticos, de granja y urgencias."
+        description="Clínica general, cardiología, diagnóstico por imágenes, cirugías de tejidos blandos y odontología canina y felina en EcoVet Apóstoles. No se realizan urgencias."
         path="/especialidades"
       />
       <section className="section-pad page-top">
         <div className="container-page">
           <SectionHeading
             eyebrow="Especialidades"
-            title="Cuidado especializado por especie y necesidad"
-            description="Adaptamos protocolos, ambiente y comunicación según el paciente."
+            title="Áreas de atención"
+            description="Servicios y áreas de atención de EcoVet Clínica Veterinaria."
           />
+          <div className="mb-8 rounded-2xl border-2 border-brand-500 bg-brand-50 px-5 py-5 text-center">
+            <p className="font-display text-xl font-bold text-brand-800 sm:text-2xl">
+              No se realizan urgencias.
+            </p>
+          </div>
           <div className="grid gap-4 sm:gap-6 lg:grid-cols-2">
             {specialties.map((item, i) => (
               <AnimatedSection key={item.id} delay={i * 0.05}>
@@ -38,11 +43,13 @@ export function Specialties() {
                     <p className="mt-2 text-sm leading-relaxed text-muted sm:mt-3">
                       {item.description}
                     </p>
-                    <ul className="mt-3 space-y-1 text-sm text-brand-800 sm:mt-4">
-                      {item.features.map((f) => (
-                        <li key={f}>• {f}</li>
-                      ))}
-                    </ul>
+                    {item.features.length > 0 && (
+                      <ul className="mt-3 space-y-1 text-sm text-brand-800 sm:mt-4">
+                        {item.features.map((f) => (
+                          <li key={f}>• {f}</li>
+                        ))}
+                      </ul>
+                    )}
                   </div>
                 </article>
               </AnimatedSection>
@@ -51,7 +58,7 @@ export function Specialties() {
           <div className="mt-8 text-center sm:mt-10">
             <Link to="/reservas" className="inline-block w-full sm:w-auto">
               <Button size="lg" className="w-full sm:w-auto">
-                Reservar turno especializado
+                Reservar turno
               </Button>
             </Link>
           </div>

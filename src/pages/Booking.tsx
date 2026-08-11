@@ -182,10 +182,12 @@ export function Booking() {
                   label="Fecha y hora"
                   value={`${formatDate(confirmation.date)} · ${confirmation.time}`}
                 />
-                <Detail
-                  label="Precio de referencia"
-                  value={formatPrice(confirmation.estimatedPrice)}
-                />
+                {confirmation.estimatedPrice > 0 && (
+                  <Detail
+                    label="Precio de referencia"
+                    value={formatPrice(confirmation.estimatedPrice)}
+                  />
+                )}
                 {confirmation.notes && (
                   <div className="sm:col-span-2">
                     <Detail label="Observaciones" value={confirmation.notes} />

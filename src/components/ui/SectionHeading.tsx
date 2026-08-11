@@ -47,7 +47,7 @@ export function SectionHeading({
       {description && (
         <p
           className={cn(
-            'mt-3 text-sm leading-relaxed sm:mt-4 sm:text-base md:text-lg',
+            'mt-3 whitespace-pre-line text-sm leading-relaxed sm:mt-4 sm:text-base md:text-lg',
             light ? 'text-white/75' : 'text-muted',
           )}
         >

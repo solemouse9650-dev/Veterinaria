@@ -27,9 +27,9 @@ export function About() {
             Sobre nosotros
           </p>
           <h1 className="mt-3 max-w-3xl font-display text-3xl font-bold text-white sm:text-4xl md:text-6xl">
-            {site.name}: medicina veterinaria con propósito
+            {site.name} Clínica Veterinaria
           </h1>
-          <p className="mt-4 max-w-2xl text-sm text-white/80 sm:mt-5 sm:text-lg">
+          <p className="mt-4 max-w-2xl whitespace-pre-line text-sm text-white/80 sm:mt-5 sm:text-lg">
             {site.mission}
           </p>
         </div>
@@ -40,8 +40,8 @@ export function About() {
           <AnimatedSection>
             <SectionHeading
               align="left"
-              eyebrow="Historia"
-              title="De un consultorio a un centro integral"
+              eyebrow="Nuestra historia"
+              title="Nuestra historia"
               description={site.history}
             />
           </AnimatedSection>
@@ -65,11 +65,10 @@ export function About() {
       <section className="section-pad bg-white">
         <div className="container-page">
           <SectionHeading
-            eyebrow="Valores"
-            title="Lo que guía cada decisión clínica"
-            description="Nuestra cultura se construye sobre empatía, excelencia y transparencia."
+            eyebrow="Nuestros valores"
+            title="Nuestros valores"
           />
-          <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-4">
+          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
             {site.values.map((value, i) => (
               <AnimatedSection key={value.title} delay={i * 0.06}>
                 <article className="h-full rounded-3xl border border-line bg-canvas p-6">
@@ -89,23 +88,22 @@ export function About() {
       <section className="section-pad">
         <div className="container-page">
           <SectionHeading
-            eyebrow="Equipo e instalaciones"
-            title="Personas y espacios pensados para el bienestar"
+            eyebrow="Equipo"
+            title="Equipo"
             description={site.commitment}
           />
-          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {team.map((member, i) => (
               <AnimatedSection key={member.id} delay={i * 0.05}>
                 <article className="overflow-hidden rounded-3xl border border-line bg-white">
                   <img
                     src={member.image}
                     alt={member.name}
-                    className="aspect-[4/5] w-full object-cover"
+                    className="aspect-[4/5] w-full object-cover object-center"
                   />
                   <div className="p-4">
                     <h3 className="font-display text-lg font-semibold">{member.name}</h3>
                     <p className="text-sm text-brand-700">{member.specialty}</p>
-                    <p className="mt-2 text-sm text-muted">{member.description}</p>
                   </div>
                 </article>
               </AnimatedSection>

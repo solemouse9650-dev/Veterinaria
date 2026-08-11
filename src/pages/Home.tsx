@@ -183,13 +183,17 @@ export function Home() {
         <div className="container-page">
           <SectionHeading
             eyebrow="Servicios"
-            title="Todo lo que tu mascota necesita"
-            description="Desde la consulta preventiva hasta cirugías y estética, con precios de referencia y turnos online."
+            title="Nuestros servicios"
+            description="Atención veterinaria integral en Apóstoles. Consultá el listado completo de servicios disponibles."
           />
+          <div className="mb-8 rounded-2xl border border-brand-300 bg-brand-50 px-5 py-4 text-center">
+            <p className="font-display text-lg font-bold text-brand-800 sm:text-xl">
+              No se realizan urgencias.
+            </p>
+          </div>
           <div className="grid gap-4 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3">
             {services
               .filter((s) => s.featured)
-              .slice(0, 6)
               .map((service, index) => (
                 <ServiceCard key={service.id} service={service} index={index} />
               ))}
@@ -219,12 +223,12 @@ export function Home() {
           <div>
             <SectionHeading
               align="left"
-              eyebrow="Sobre nosotros"
-              title={`Más de ${site.yearsExperience} años cuidando historias de vida`}
-              description={site.history.slice(0, 220) + '…'}
+              eyebrow="Nuestra historia"
+              title="Nuestra historia"
+              description={site.history}
             />
             <div className="grid gap-3 sm:grid-cols-2 sm:gap-4">
-              {site.values.slice(0, 4).map((value) => (
+              {site.values.map((value) => (
                 <div
                   key={value.title}
                   className="rounded-2xl border border-line bg-white p-4"
@@ -248,20 +252,20 @@ export function Home() {
           <SectionHeading
             light
             eyebrow="Equipo"
-            title="Veterinarios que inspiran confianza"
-            description="Profesionales con formación continua y vocación por el bienestar animal."
+            title="Equipo"
+            description="Profesionales de EcoVet Clínica Veterinaria."
           />
-          <div className="grid grid-cols-2 gap-3 sm:gap-5 lg:grid-cols-4">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-3 sm:gap-5">
             {team.map((member, i) => (
               <AnimatedSection key={member.id} delay={i * 0.06}>
                 <article className="overflow-hidden rounded-2xl border border-white/10 bg-white/5 sm:rounded-3xl">
                   <img
                     src={member.image}
                     alt={member.name}
-                    className="aspect-[4/5] w-full object-cover"
+                    className="mx-auto aspect-square w-full max-w-[180px] object-contain p-6"
                     loading="lazy"
                   />
-                  <div className="p-3 sm:p-4">
+                  <div className="p-3 text-center sm:p-4">
                     <h3 className="font-display text-sm font-semibold sm:text-lg">
                       {member.name}
                     </h3>
@@ -276,38 +280,40 @@ export function Home() {
         </div>
       </section>
 
-      <section className="section-pad">
-        <div className="container-page">
-          <SectionHeading
-            eyebrow="Testimonios"
-            title="Familias que confían en EcoVet"
-            description="Opiniones reales de tutores que eligieron una clínica cercana y profesional."
-          />
-          <div className="grid gap-4 sm:grid-cols-2 sm:gap-5 lg:grid-cols-4">
-            {testimonials.map((t, i) => (
-              <AnimatedSection key={t.id} delay={i * 0.05}>
-                <article className="h-full rounded-3xl border border-line bg-white p-4 sm:p-5">
-                  <div className="flex items-center gap-3">
-                    <img
-                      src={t.image}
-                      alt={t.name}
-                      className="h-11 w-11 rounded-full object-cover sm:h-12 sm:w-12"
-                    />
-                    <div className="min-w-0">
-                      <p className="truncate font-semibold">{t.name}</p>
-                      <p className="text-sm text-muted">Tutor de {t.petName}</p>
+      {testimonials.length > 0 && (
+        <section className="section-pad">
+          <div className="container-page">
+            <SectionHeading
+              eyebrow="Testimonios"
+              title="Familias que confían en EcoVet"
+              description="Opiniones de tutores que eligieron una clínica cercana y profesional."
+            />
+            <div className="grid gap-4 sm:grid-cols-2 sm:gap-5 lg:grid-cols-4">
+              {testimonials.map((t, i) => (
+                <AnimatedSection key={t.id} delay={i * 0.05}>
+                  <article className="h-full rounded-3xl border border-line bg-white p-4 sm:p-5">
+                    <div className="flex items-center gap-3">
+                      <img
+                        src={t.image}
+                        alt={t.name}
+                        className="h-11 w-11 rounded-full object-cover sm:h-12 sm:w-12"
+                      />
+                      <div className="min-w-0">
+                        <p className="truncate font-semibold">{t.name}</p>
+                        <p className="text-sm text-muted">Tutor de {t.petName}</p>
+                      </div>
                     </div>
-                  </div>
-                  <p className="mt-3 text-amber-500" aria-label={`${t.rating} estrellas`}>
-                    {'★'.repeat(t.rating)}
-                  </p>
-                  <p className="mt-2 text-sm leading-relaxed text-muted">“{t.comment}”</p>
-                </article>
-              </AnimatedSection>
-            ))}
+                    <p className="mt-3 text-amber-500" aria-label={`${t.rating} estrellas`}>
+                      {'★'.repeat(t.rating)}
+                    </p>
+                    <p className="mt-2 text-sm leading-relaxed text-muted">“{t.comment}”</p>
+                  </article>
+                </AnimatedSection>
+              ))}
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       <section className="section-pad bg-white">
         <div className="container-page grid gap-8 lg:grid-cols-2 lg:gap-10">

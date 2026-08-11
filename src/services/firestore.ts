@@ -171,7 +171,21 @@ export async function fetchActivity(): Promise<ActivityLog[]> {
     .slice(0, 12)
 }
 
+async function clearCollection(name: string) {
+  const snap = await getDocs(collection(db, name))
+  await Promise.all(snap.docs.map((d) => deleteDoc(d.ref)))
+}
+
 export async function seedDatabase() {
+  await Promise.all([
+    clearCollection('services'),
+    clearCollection('team'),
+    clearCollection('gallery'),
+    clearCollection('blog'),
+    clearCollection('faqs'),
+    clearCollection('testimonials'),
+  ])
+
   await setDoc(doc(db, 'site', 'info'), seedSite)
   await setDoc(doc(db, 'site', 'hero'), seedHero)
   await setDoc(doc(db, 'hours', 'main'), {
@@ -206,5 +220,5 @@ export async function seedDatabase() {
     await setDoc(doc(db, 'testimonials', id), rest)
   }
 
-  await logActivity('seed', 'Base de datos inicializada con contenido demo')
+  await logActivity('seed', 'Contenido oficial de EcoVet cargado en Firestore')
 }

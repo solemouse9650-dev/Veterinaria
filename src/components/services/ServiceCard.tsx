@@ -40,29 +40,41 @@ export function ServiceCard({ service, index = 0 }: ServiceCardProps) {
             {service.shortDescription}
           </p>
         </div>
-        <div className="flex flex-wrap items-center justify-between gap-2 text-sm">
-          <span className="font-semibold text-brand-700">
-            desde {formatPrice(service.price)}
-          </span>
-          <span className="inline-flex items-center gap-1 text-muted">
-            <Clock3 className="h-4 w-4" />
-            {service.duration >= 60 && service.duration % 60 === 0
-              ? `${service.duration / 60} h`
-              : `${service.duration} min`}
-          </span>
-        </div>
+        {(service.price > 0 || service.duration > 0) && (
+          <div className="flex flex-wrap items-center justify-between gap-2 text-sm">
+            {service.price > 0 && (
+              <span className="font-semibold text-brand-700">
+                desde {formatPrice(service.price)}
+              </span>
+            )}
+            {service.duration > 0 && (
+              <span className="inline-flex items-center gap-1 text-muted">
+                <Clock3 className="h-4 w-4" />
+                {service.duration >= 60 && service.duration % 60 === 0
+                  ? `${service.duration / 60} h`
+                  : `${service.duration} min`}
+              </span>
+            )}
+          </div>
+        )}
         <div className="grid grid-cols-1 gap-2 xs:grid-cols-2">
           <Link to={`/servicios/${service.slug}`}>
             <Button variant="outline" className="w-full" size="sm">
               Ver detalle
             </Button>
           </Link>
-          <Link to={`/reservas?servicio=${service.slug}`}>
-            <Button className="w-full" size="sm">
-              <CalendarDays className="h-4 w-4" />
-              Reservar
+          {service.category !== 'Próximamente' ? (
+            <Link to={`/reservas?servicio=${service.slug}`}>
+              <Button className="w-full" size="sm">
+                <CalendarDays className="h-4 w-4" />
+                Reservar
+              </Button>
+            </Link>
+          ) : (
+            <Button className="w-full" size="sm" disabled>
+              Próximamente
             </Button>
-          </Link>
+          )}
         </div>
       </div>
     </motion.article>

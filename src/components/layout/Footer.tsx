@@ -129,7 +129,9 @@ export function Footer() {
               </li>
             ))}
           </ul>
-          <p className="mt-4 text-xs text-white/55">{hours.emergencyNote}</p>
+          <p className="mt-4 rounded-xl bg-white/10 px-3 py-2 text-sm font-semibold text-brand-100">
+            {hours.emergencyNote}
+          </p>
         </div>
       </div>
 

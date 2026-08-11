@@ -48,28 +48,40 @@ export function ServiceDetail() {
             <p className="mt-5 text-lg leading-relaxed text-muted">
               {service.description}
             </p>
-            <div className="mt-8 flex flex-wrap gap-4">
-              <div className="rounded-2xl border border-line bg-white px-5 py-4">
-                <p className="text-sm text-muted">Precio de referencia</p>
-                <p className="font-display text-2xl font-semibold text-brand-700">
-                  {formatPrice(service.price)}
-                </p>
+            {(service.price > 0 || service.duration > 0) && (
+              <div className="mt-8 flex flex-wrap gap-4">
+                {service.price > 0 && (
+                  <div className="rounded-2xl border border-line bg-white px-5 py-4">
+                    <p className="text-sm text-muted">Precio de referencia</p>
+                    <p className="font-display text-2xl font-semibold text-brand-700">
+                      {formatPrice(service.price)}
+                    </p>
+                  </div>
+                )}
+                {service.duration > 0 && (
+                  <div className="rounded-2xl border border-line bg-white px-5 py-4">
+                    <p className="text-sm text-muted">Duración estimada</p>
+                    <p className="inline-flex items-center gap-2 font-display text-2xl font-semibold">
+                      <Clock3 className="h-5 w-5 text-brand-600" />
+                      {service.duration} min
+                    </p>
+                  </div>
+                )}
               </div>
-              <div className="rounded-2xl border border-line bg-white px-5 py-4">
-                <p className="text-sm text-muted">Duración estimada</p>
-                <p className="inline-flex items-center gap-2 font-display text-2xl font-semibold">
-                  <Clock3 className="h-5 w-5 text-brand-600" />
-                  {service.duration} min
-                </p>
-              </div>
-            </div>
+            )}
             <div className="mt-8 flex flex-col gap-2.5 sm:flex-row sm:flex-wrap sm:gap-3">
-              <Link to={`/reservas?servicio=${service.slug}`} className="w-full sm:w-auto">
-                <Button size="lg" className="w-full sm:w-auto">
-                  <CalendarDays className="h-5 w-5" />
-                  Reservar este servicio
+              {service.category !== 'Próximamente' ? (
+                <Link to={`/reservas?servicio=${service.slug}`} className="w-full sm:w-auto">
+                  <Button size="lg" className="w-full sm:w-auto">
+                    <CalendarDays className="h-5 w-5" />
+                    Reservar este servicio
+                  </Button>
+                </Link>
+              ) : (
+                <Button size="lg" className="w-full sm:w-auto" disabled>
+                  Próximamente
                 </Button>
-              </Link>
+              )}
               <a
                 href={whatsappUrl(
                   site.whatsapp,

@@ -96,15 +96,35 @@ export function SiteProvider({ children }: { children: ReactNode }) {
         fetchTestimonials(),
         fetchHours(),
       ])
-      setSite(siteData)
-      setHero(heroData)
-      setServices(servicesData.filter((s) => s.active !== false))
-      setTeam(teamData.filter((t) => t.active !== false))
-      setGallery(galleryData)
-      setBlog(blogData.filter((b) => b.published !== false))
-      setFaqs(faqsData.filter((f) => f.active !== false))
-      setTestimonials(testimonialsData.filter((t) => t.active !== false))
-      setHours(hoursData)
+
+      // Si Firestore aún tiene el contenido demo anterior, usar el seed oficial.
+      const legacyContent =
+        !siteData.address?.includes('Suipacha') ||
+        servicesData.some(
+          (s) => s.slug === 'emergencias' || s.slug === 'consulta-clinica',
+        )
+
+      if (legacyContent) {
+        setSite(seedSite)
+        setHero(seedHero)
+        setServices(seedServices.filter((s) => s.active !== false))
+        setTeam(seedTeam.filter((t) => t.active !== false))
+        setGallery(seedGallery)
+        setBlog(seedBlog.filter((b) => b.published !== false))
+        setFaqs(seedFaqs.filter((f) => f.active !== false))
+        setTestimonials(seedTestimonials.filter((t) => t.active !== false))
+        setHours(seedHours)
+      } else {
+        setSite(siteData)
+        setHero(heroData)
+        setServices(servicesData.filter((s) => s.active !== false))
+        setTeam(teamData.filter((t) => t.active !== false))
+        setGallery(galleryData)
+        setBlog(blogData.filter((b) => b.published !== false))
+        setFaqs(faqsData.filter((f) => f.active !== false))
+        setTestimonials(testimonialsData.filter((t) => t.active !== false))
+        setHours(hoursData)
+      }
     } catch {
       // Keep seed fallbacks when Firestore is unreachable.
     } finally {

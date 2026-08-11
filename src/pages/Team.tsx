@@ -10,43 +10,44 @@ export function Team() {
     <>
       <SEO
         title="Equipo"
-        description="Conocé al equipo veterinario de EcoVet: experiencia, especialidades y horarios."
+        description="Conocé al equipo de EcoVet Clínica Veterinaria en Apóstoles, Misiones."
         path="/equipo"
       />
       <section className="section-pad page-top">
         <div className="container-page">
           <SectionHeading
-            eyebrow="Equipo veterinario"
-            title="Profesionales con vocación y experiencia"
-            description="Cada integrante aporta una mirada especializada para un cuidado integral."
+            eyebrow="Equipo"
+            title="Equipo"
+            description="Profesionales de EcoVet Clínica Veterinaria."
           />
-          <div className="grid gap-4 sm:gap-6 md:grid-cols-2">
+          <div className="grid gap-4 sm:gap-6 md:grid-cols-2 lg:grid-cols-3">
             {team.map((member, i) => (
               <AnimatedSection key={member.id} delay={i * 0.06}>
-                <article className="grid overflow-hidden rounded-[1.5rem] border border-line bg-white sm:rounded-[2rem] md:grid-cols-[180px_1fr] lg:grid-cols-[220px_1fr]">
+                <article className="grid overflow-hidden rounded-[1.5rem] border border-line bg-white sm:rounded-[2rem]">
                   <img
                     src={member.image}
-                    alt={`Foto de ${member.name}`}
-                    className="h-56 w-full object-cover sm:h-64 md:h-full"
+                    alt={member.name}
+                    className="mx-auto h-40 w-40 object-contain p-6 sm:h-48 sm:w-48"
                   />
-                  <div className="p-4 sm:p-6">
-                    <h2 className="font-display text-xl font-semibold sm:text-2xl">{member.name}</h2>
+                  <div className="p-4 text-center sm:p-6">
+                    <h2 className="font-display text-xl font-semibold sm:text-2xl">
+                      {member.name}
+                    </h2>
                     <p className="mt-1 text-sm font-semibold text-brand-700">
                       {member.specialty}
                     </p>
-                    <p className="mt-3 text-sm leading-relaxed text-muted">
-                      {member.description}
-                    </p>
-                    <div className="mt-4 space-y-1 text-sm">
-                      <p>
+                    {member.experience && (
+                      <p className="mt-3 text-sm text-muted">
                         <span className="font-semibold text-ink">Experiencia:</span>{' '}
-                        <span className="text-muted">{member.experience}</span>
+                        {member.experience}
                       </p>
-                      <p>
+                    )}
+                    {member.schedule && (
+                      <p className="mt-1 text-sm text-muted">
                         <span className="font-semibold text-ink">Horarios:</span>{' '}
-                        <span className="text-muted">{member.schedule}</span>
+                        {member.schedule}
                       </p>
-                    </div>
+                    )}
                   </div>
                 </article>
               </AnimatedSection>

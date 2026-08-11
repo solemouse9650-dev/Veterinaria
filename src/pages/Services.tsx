@@ -21,16 +21,21 @@ export function Services() {
     <>
       <SEO
         title="Servicios"
-        description="Consultas, vacunación, cirugías, diagnóstico, emergencias, peluquería y más en EcoVet."
+        description="Clínica general, vacunaciones, ecografía, radiografía digital, cirugías de tejidos blandos, cardiología, odontología y más en EcoVet Apóstoles. No se realizan urgencias."
         path="/servicios"
       />
       <section className="section-pad page-top">
         <div className="container-page">
           <SectionHeading
             eyebrow="Servicios"
-            title="Un menú completo de cuidado veterinario"
-            description="Cada servicio incluye descripción, precio de referencia, duración estimada y reserva online."
+            title="Nuestros servicios"
+            description="Servicios de atención veterinaria integral en EcoVet Clínica Veterinaria."
           />
+          <div className="mb-8 rounded-2xl border-2 border-brand-500 bg-brand-50 px-5 py-5 text-center">
+            <p className="font-display text-xl font-bold text-brand-800 sm:text-2xl">
+              No se realizan urgencias.
+            </p>
+          </div>
           <div className="mb-10 flex flex-wrap justify-center gap-2">
             {categories.map((cat) => (
               <button
