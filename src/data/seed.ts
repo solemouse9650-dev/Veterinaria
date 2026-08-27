@@ -34,10 +34,9 @@ export const siteInfo: SiteInfo = {
   mapLat: -27.9147,
   mapLng: -55.7537,
   social: {
-    facebook: 'https://facebook.com/ecovetclinic',
+    facebook:
+      'https://www.facebook.com/people/EcoVet-Cl%C3%ADnica-veterinaria/61572983251304/',
     instagram: 'https://instagram.com/ecovet_apostoles',
-    youtube: 'https://youtube.com/@ecovetclinic',
-    tiktok: 'https://tiktok.com/@ecovetclinic',
   },
   yearsExperience: 0,
   patientsServed: 0,
@@ -505,6 +504,8 @@ export const hoursConfig: HoursConfig = {
   holidays: [],
   vacations: [],
   emergencyNote: 'No se realizan urgencias.',
+  statusOverride: 'auto',
+  statusNote: '',
 }
 
 export const timeSlots = [

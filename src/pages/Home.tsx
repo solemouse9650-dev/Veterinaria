@@ -3,7 +3,6 @@ import {
   ArrowRight,
   CalendarDays,
   HeartHandshake,
-  MessageCircle,
   ShieldCheck,
   Stethoscope,
 } from 'lucide-react'
@@ -12,17 +11,17 @@ import { Link } from 'react-router-dom'
 import { SEO } from '@/components/seo/SEO'
 import { ServiceCard } from '@/components/services/ServiceCard'
 import { TeamMemberCard } from '@/components/team/TeamMemberCard'
-import { Accordion } from '@/components/ui/Accordion'
 import { AnimatedSection } from '@/components/ui/AnimatedSection'
 import { Button } from '@/components/ui/Button'
 import { Counter } from '@/components/ui/Counter'
 import { SectionHeading } from '@/components/ui/SectionHeading'
+import { WhatsAppIcon } from '@/components/brand/SocialIcons'
 import { useSite } from '@/contexts/SiteContext'
 import { CLINIC_PHOTOS, HOME_PATIENT_PREVIEW } from '@/data/media'
 import { whatsappUrl } from '@/lib/utils'
 
 export function Home() {
-  const { site, hero, services, testimonials, faqs, team } = useSite()
+  const { site, hero, services, testimonials, team } = useSite()
   const heroRef = useRef<HTMLElement>(null)
   const { scrollYProgress } = useScroll({
     target: heroRef,
@@ -117,7 +116,7 @@ export function Home() {
               className="w-full sm:w-auto"
             >
               <Button size="lg" variant="whatsapp" className="w-full sm:w-auto">
-                <MessageCircle className="h-5 w-5" />
+                <WhatsAppIcon className="h-5 w-5" />
                 <span className="truncate">{hero.ctaSecondary}</span>
               </Button>
             </a>
@@ -365,18 +364,6 @@ export function Home() {
         </section>
       )}
 
-      <section className="section-pad bg-white">
-        <div className="container-page grid gap-8 lg:grid-cols-2 lg:gap-10">
-          <SectionHeading
-            align="left"
-            eyebrow="FAQ"
-            title="Resolvemos tus dudas antes de venir"
-            description="Si necesitás una respuesta inmediata, escribinos por WhatsApp."
-          />
-          <Accordion items={faqs.slice(0, 5)} />
-        </div>
-      </section>
-
       <section className="section-pad pb-[calc(clamp(2.75rem,5.5vw,6rem)+4rem)] sm:pb-[clamp(2.75rem,5.5vw,6rem)]">
         <div className="container-page overflow-hidden rounded-[1.5rem] bg-gradient-to-br from-brand-800 via-brand-600 to-brand-500 px-5 py-10 text-center text-white sm:rounded-[2rem] sm:px-8 sm:py-14 md:px-16">
           <AnimatedSection>
@@ -409,6 +396,7 @@ export function Home() {
                 className="w-full sm:w-auto"
               >
                 <Button size="lg" variant="secondary" className="w-full sm:w-auto">
+                  <WhatsAppIcon className="h-5 w-5" />
                   WhatsApp
                 </Button>
               </a>

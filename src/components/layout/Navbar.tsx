@@ -1,8 +1,9 @@
 import { AnimatePresence, motion } from 'framer-motion'
-import { CalendarDays, Menu, MessageCircle, X } from 'lucide-react'
+import { CalendarDays, Menu, X } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { Link, NavLink } from 'react-router-dom'
 import { Logo } from '@/components/brand/Logo'
+import { WhatsAppIcon } from '@/components/brand/SocialIcons'
 import { Button } from '@/components/ui/Button'
 import { useSite } from '@/contexts/SiteContext'
 import { cn, whatsappUrl } from '@/lib/utils'
@@ -15,7 +16,6 @@ const links = [
   { to: '/equipo', label: 'Equipo' },
   { to: '/galeria', label: 'Galería' },
   { to: '/blog', label: 'Blog' },
-  { to: '/preguntas-frecuentes', label: 'FAQ' },
   { to: '/contacto', label: 'Contacto' },
 ]
 
@@ -98,7 +98,7 @@ export function Navbar() {
               className="focus-ring rounded-xl"
             >
               <Button variant="whatsapp" size="sm" type="button">
-                <MessageCircle className="h-4 w-4" />
+                <WhatsAppIcon className="h-4 w-4" />
                 <span className="hidden xl:inline">WhatsApp</span>
               </Button>
             </a>
@@ -172,7 +172,7 @@ export function Navbar() {
                     onClick={() => setOpen(false)}
                   >
                     <Button variant="whatsapp" className="w-full" size="lg">
-                      <MessageCircle className="h-4 w-4" />
+                      <WhatsAppIcon className="h-4 w-4" />
                       WhatsApp
                     </Button>
                   </a>

@@ -2,10 +2,11 @@ import { useEffect, useState } from 'react'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner'
+import { Select } from '@/components/ui/Select'
 import { Textarea } from '@/components/ui/Textarea'
 import { useSite } from '@/contexts/SiteContext'
 import { fetchHours, logActivity, saveDoc } from '@/services/firestore'
-import type { HoursConfig } from '@/types'
+import type { HoursConfig, OpenStatusOverride } from '@/types'
 
 export function HoursAdmin() {
   const { refresh } = useSite()
@@ -29,6 +30,8 @@ export function HoursAdmin() {
         holidays: hours.holidays,
         vacations: hours.vacations,
         emergencyNote: hours.emergencyNote,
+        statusOverride: hours.statusOverride,
+        statusNote: hours.statusNote,
       }
       await saveDoc('hours', 'main', rest)
       await logActivity('horarios', 'Horarios actualizados')
@@ -50,9 +53,38 @@ export function HoursAdmin() {
     <div className="space-y-6">
       <div>
         <h1 className="font-display text-3xl font-semibold">Gestión de horarios</h1>
-        <p className="text-muted">Días, horarios, feriados y vacaciones.</p>
+        <p className="text-muted">
+          Días, horarios, feriados y el indicador de abierto/cerrado que ve el público.
+        </p>
       </div>
       <div className="space-y-3 rounded-2xl border border-line bg-white p-5">
+        <div className="grid gap-3 rounded-2xl border border-brand-200 bg-brand-50/70 p-4 md:grid-cols-2">
+          <Select
+            label="Indicador en la web"
+            value={hours.statusOverride}
+            onChange={(e) =>
+              setHours({
+                ...hours,
+                statusOverride: e.target.value as OpenStatusOverride,
+              })
+            }
+            options={[
+              { value: 'auto', label: 'Automático (según horario)' },
+              { value: 'open', label: 'Forzar abierto' },
+              { value: 'closed', label: 'Forzar cerrado (feriado u otro)' },
+            ]}
+          />
+          <Input
+            label="Motivo (opcional)"
+            placeholder="Ej. Cerrado por feriado"
+            value={hours.statusNote}
+            onChange={(e) => setHours({ ...hours, statusNote: e.target.value })}
+          />
+          <p className="text-sm text-muted md:col-span-2">
+            Usá “Forzar cerrado” un feriado o un cierre extra. Cuando vuelva el horario
+            habitual, dejalo en automático.
+          </p>
+        </div>
         {hours.regular.map((day, index) => (
           <div key={day.day} className="grid gap-3 md:grid-cols-4">
             <Input label="Día" value={day.day} onChange={(e) => {

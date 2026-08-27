@@ -38,6 +38,7 @@ import {
   team as seedTeam,
   testimonials as seedTestimonials,
 } from '@/data/seed'
+import { normalizeHours } from '@/lib/hours'
 
 function requireDb(): Firestore {
   if (!db) {
@@ -152,7 +153,8 @@ export async function fetchTestimonials(): Promise<Testimonial[]> {
 export async function fetchHours(): Promise<HoursConfig> {
   if (!db) return seedHours
   const snap = await getDoc(doc(requireDb(), 'hours', 'main'))
-  return snap.exists() ? ({ id: snap.id, ...snap.data() } as HoursConfig) : seedHours
+  if (!snap.exists()) return seedHours
+  return normalizeHours({ id: snap.id, ...snap.data() } as HoursConfig)
 }
 
 export async function fetchReservations(): Promise<Reservation[]> {
@@ -251,6 +253,8 @@ export async function seedDatabase() {
     holidays: seedHours.holidays,
     vacations: seedHours.vacations,
     emergencyNote: seedHours.emergencyNote,
+    statusOverride: seedHours.statusOverride,
+    statusNote: seedHours.statusNote,
   })
 
   for (const item of seedServices) {

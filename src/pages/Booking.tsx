@@ -1,10 +1,11 @@
 import { zodResolver } from '@hookform/resolvers/zod'
-import { CheckCircle2, MessageCircle } from 'lucide-react'
+import { CheckCircle2 } from 'lucide-react'
 import { useMemo, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { Link, useSearchParams } from 'react-router-dom'
 import { z } from 'zod'
 import { SEO } from '@/components/seo/SEO'
+import { WhatsAppIcon } from '@/components/brand/SocialIcons'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { SectionHeading } from '@/components/ui/SectionHeading'
@@ -227,7 +228,7 @@ export function Booking() {
                   rel="noopener noreferrer"
                 >
                   <Button variant="whatsapp">
-                    <MessageCircle className="h-4 w-4" />
+                    <WhatsAppIcon className="h-4 w-4" />
                     Escribir por WhatsApp
                   </Button>
                 </a>

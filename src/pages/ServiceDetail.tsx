@@ -1,6 +1,7 @@
-import { CalendarDays, Clock3, MessageCircle } from 'lucide-react'
+import { CalendarDays, Clock3 } from 'lucide-react'
 import { Link, useParams } from 'react-router-dom'
 import { SEO } from '@/components/seo/SEO'
+import { WhatsAppIcon } from '@/components/brand/SocialIcons'
 import { Button } from '@/components/ui/Button'
 import { useSite } from '@/contexts/SiteContext'
 import { formatPrice, whatsappUrl } from '@/lib/utils'
@@ -92,7 +93,7 @@ export function ServiceDetail() {
                 className="w-full sm:w-auto"
               >
                 <Button size="lg" variant="whatsapp" className="w-full sm:w-auto">
-                  <MessageCircle className="h-5 w-5" />
+                  <WhatsAppIcon className="h-5 w-5" />
                   Consultar por WhatsApp
                 </Button>
               </a>

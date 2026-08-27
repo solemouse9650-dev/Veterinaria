@@ -4,6 +4,8 @@ import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { SEO } from '@/components/seo/SEO'
+import { WhatsAppIcon } from '@/components/brand/SocialIcons'
+import { OpenStatusBadge } from '@/components/hours/OpenStatusBadge'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { SectionHeading } from '@/components/ui/SectionHeading'
@@ -92,11 +94,15 @@ export function Contact() {
                   rel="noopener noreferrer"
                   className="mt-5 inline-block"
                 >
-                  <Button variant="whatsapp">Abrir WhatsApp</Button>
+                  <Button variant="whatsapp">
+                    <WhatsAppIcon className="h-4 w-4" />
+                    Abrir WhatsApp
+                  </Button>
                 </a>
               </div>
               <div className="rounded-3xl border border-line bg-white p-6">
                 <p className="font-semibold">Horarios de atención</p>
+                <OpenStatusBadge hours={hours} className="mt-3" />
                 <ul className="mt-3 space-y-2 text-sm text-muted">
                   {hours.regular.map((d) => (
                     <li key={d.day} className="flex justify-between gap-4">

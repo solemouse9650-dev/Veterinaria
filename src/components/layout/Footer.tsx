@@ -1,12 +1,12 @@
-import {
-  Clock3,
-  Mail,
-  MapPin,
-  Phone,
-  Share2,
-} from 'lucide-react'
+import { Clock3, Mail, MapPin, Phone } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { Logo } from '@/components/brand/Logo'
+import {
+  FacebookIcon,
+  InstagramIcon,
+  WhatsAppIcon,
+} from '@/components/brand/SocialIcons'
+import { OpenStatusBadge } from '@/components/hours/OpenStatusBadge'
 import { useSite } from '@/contexts/SiteContext'
 import { sanitizeHttpUrl } from '@/lib/sanitize'
 import { whatsappUrl } from '@/lib/utils'
@@ -14,6 +14,8 @@ import { whatsappUrl } from '@/lib/utils'
 export function Footer() {
   const { site, hours, services } = useSite()
   const year = new Date().getFullYear()
+  const facebook = sanitizeHttpUrl(site.social.facebook)
+  const instagram = sanitizeHttpUrl(site.social.instagram)
 
   return (
     <footer className="border-t border-line bg-ink text-white pb-[calc(4.5rem+env(safe-area-inset-bottom,0px))] sm:pb-0">
@@ -34,27 +36,38 @@ export function Footer() {
             {site.tagline}. Atención veterinaria integral con enfoque preventivo y
             trato humano.
           </p>
-          <div className="mt-5 flex gap-3">
-            {[
-              { href: site.social.facebook, label: 'Facebook' },
-              { href: site.social.instagram, label: 'Instagram' },
-              { href: site.social.youtube, label: 'YouTube' },
-            ].map((item) => {
-              const href = sanitizeHttpUrl(item.href)
-              if (!href) return null
-              return (
-                <a
-                  key={item.label}
-                  href={href}
-                  aria-label={item.label}
-                  className="rounded-full bg-white/10 p-2 hover:bg-brand-600"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <Share2 className="h-4 w-4" />
-                </a>
-              )
-            })}
+          <div className="mt-5 flex flex-wrap gap-2.5">
+            {facebook ? (
+              <a
+                href={facebook}
+                aria-label="Facebook de EcoVet"
+                className="flex h-10 w-10 items-center justify-center rounded-full bg-[#1877F2] text-white transition hover:opacity-90"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <FacebookIcon className="h-5 w-5" />
+              </a>
+            ) : null}
+            {instagram ? (
+              <a
+                href={instagram}
+                aria-label="Instagram de EcoVet"
+                className="flex h-10 w-10 items-center justify-center rounded-full bg-[linear-gradient(45deg,#f58529,#dd2a7b,#8134af)] text-white transition hover:opacity-90"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <InstagramIcon className="h-5 w-5" />
+              </a>
+            ) : null}
+            <a
+              href={whatsappUrl(site.whatsapp)}
+              aria-label="WhatsApp de EcoVet"
+              className="flex h-10 w-10 items-center justify-center rounded-full bg-[#25D366] text-white transition hover:opacity-90"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <WhatsAppIcon className="h-5 w-5" />
+            </a>
           </div>
         </div>
 
@@ -100,8 +113,9 @@ export function Footer() {
                 href={whatsappUrl(site.whatsapp)}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-brand-200 hover:text-white"
+                className="inline-flex items-center gap-2 text-brand-200 hover:text-white"
               >
+                <WhatsAppIcon className="h-4 w-4" />
                 WhatsApp directo
               </a>
             </li>
@@ -112,13 +126,13 @@ export function Footer() {
           <p className="mb-4 text-sm font-semibold uppercase tracking-wider text-brand-200">
             Horarios
           </p>
+          <OpenStatusBadge hours={hours} variant="dark" className="mb-3" />
           <ul className="space-y-2 text-sm text-white/75">
             {hours.regular.map((d) => (
               <li key={d.day} className="flex items-start gap-2">
                 <Clock3 className="mt-0.5 h-4 w-4 shrink-0 text-brand-300" />
                 <span>
-                  {d.day}:{' '}
-                  {d.closed ? 'Cerrado' : `${d.open} – ${d.close}`}
+                  {d.day}: {d.closed ? 'Cerrado' : `${d.open} – ${d.close}`}
                 </span>
               </li>
             ))}
@@ -130,27 +144,10 @@ export function Footer() {
       </div>
 
       <div className="border-t border-white/10">
-        <div className="container-page flex flex-col gap-3 py-5 text-sm text-white/55 md:flex-row md:items-center md:justify-between">
+        <div className="container-page py-5 text-sm text-white/55">
           <p>
             © {year} {site.name}. Todos los derechos reservados.
           </p>
-          <div className="flex flex-wrap gap-4">
-            <Link to="/terminos-y-condiciones" className="hover:text-white">
-              Términos y condiciones
-            </Link>
-            <Link to="/politica-de-privacidad" className="hover:text-white">
-              Privacidad
-            </Link>
-            <Link to="/politica-de-cookies" className="hover:text-white">
-              Cookies
-            </Link>
-            <Link to="/aviso-legal" className="hover:text-white">
-              Aviso legal
-            </Link>
-            <Link to="/preguntas-frecuentes" className="hover:text-white">
-              Preguntas frecuentes
-            </Link>
-          </div>
         </div>
       </div>
     </footer>

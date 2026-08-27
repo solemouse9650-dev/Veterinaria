@@ -6,7 +6,6 @@ import { Blog } from '@/pages/Blog'
 import { BlogPost } from '@/pages/BlogPost'
 import { Booking } from '@/pages/Booking'
 import { Contact } from '@/pages/Contact'
-import { FAQPage } from '@/pages/FAQ'
 import { Gallery } from '@/pages/Gallery'
 import { Home } from '@/pages/Home'
 import { NotFound } from '@/pages/NotFound'
@@ -28,12 +27,6 @@ import { HeroAdmin } from '@/pages/admin/HeroAdmin'
 import { TestimonialsAdmin } from '@/pages/admin/TestimonialsAdmin'
 import { SiteAdmin } from '@/pages/admin/SiteAdmin'
 import { SecurityAdmin } from '@/pages/admin/SecurityAdmin'
-import {
-  CookiesPage,
-  LegalNoticePage,
-  PrivacyPage,
-  TermsPage,
-} from '@/pages/Legal'
 
 export default function App() {
   return (
@@ -52,11 +45,6 @@ export default function App() {
           <Route path="blog/:slug" element={<BlogPost />} />
           <Route path="reservas" element={<Booking />} />
           <Route path="contacto" element={<Contact />} />
-          <Route path="preguntas-frecuentes" element={<FAQPage />} />
-          <Route path="terminos-y-condiciones" element={<TermsPage />} />
-          <Route path="politica-de-privacidad" element={<PrivacyPage />} />
-          <Route path="politica-de-cookies" element={<CookiesPage />} />
-          <Route path="aviso-legal" element={<LegalNoticePage />} />
           <Route path="*" element={<NotFound />} />
         </Route>
 

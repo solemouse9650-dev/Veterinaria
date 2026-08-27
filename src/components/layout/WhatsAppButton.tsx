@@ -1,4 +1,4 @@
-import { MessageCircle } from 'lucide-react'
+import { WhatsAppIcon } from '@/components/brand/SocialIcons'
 import { motion } from 'framer-motion'
 import { useSite } from '@/contexts/SiteContext'
 import { whatsappUrl } from '@/lib/utils'
@@ -22,7 +22,7 @@ export function WhatsAppButton() {
       whileHover={{ scale: 1.08 }}
       whileTap={{ scale: 0.95 }}
     >
-      <MessageCircle className="h-6 w-6 sm:h-7 sm:w-7" />
+      <WhatsAppIcon className="h-6 w-6 sm:h-7 sm:w-7" />
     </motion.a>
   )
 }

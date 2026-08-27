@@ -31,6 +31,7 @@ import {
   testimonials as seedTestimonials,
 } from '@/data/seed'
 import { isStockMediaUrl, TEAM_PHOTOS } from '@/data/media'
+import { normalizeHours } from '@/lib/hours'
 import {
   fetchBlog,
   fetchFaqs,
@@ -130,6 +131,19 @@ function withLocalHero(hero: HeroContent): HeroContent {
   return hero
 }
 
+function withOfficialSocial(site: SiteInfo): SiteInfo {
+  const facebook = site.social.facebook || ''
+  const outdated =
+    !facebook || /facebook\.com\/ecovetclinic/i.test(facebook)
+  return {
+    ...site,
+    social: {
+      facebook: outdated ? seedSite.social.facebook : facebook,
+      instagram: site.social.instagram || seedSite.social.instagram,
+    },
+  }
+}
+
 export function SiteProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true)
   const [site, setSite] = useState<SiteInfo>(seedSite)
@@ -196,7 +210,7 @@ export function SiteProvider({ children }: { children: ReactNode }) {
         setTestimonials(seedTestimonials.filter((t) => t.active !== false))
         setHours(seedHours)
       } else {
-        setSite(siteData)
+        setSite(withOfficialSocial(siteData))
         setHero(withLocalHero(heroData))
         setServices(
           withLocalServiceImages(
@@ -210,7 +224,7 @@ export function SiteProvider({ children }: { children: ReactNode }) {
         setBlog(blogData.filter((b) => b.published !== false))
         setFaqs(faqsData.filter((f) => f.active !== false))
         setTestimonials(testimonialsData.filter((t) => t.active !== false))
-        setHours(hoursData)
+        setHours(normalizeHours(hoursData))
       }
     } catch {
       // Keep seed fallbacks when Firestore is unreachable.

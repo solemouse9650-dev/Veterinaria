@@ -21,8 +21,8 @@ export interface SiteInfo {
   social: {
     facebook: string
     instagram: string
-    youtube: string
-    tiktok: string
+    youtube?: string
+    tiktok?: string
   }
   yearsExperience: number
   patientsServed: number
@@ -119,12 +119,17 @@ export interface DayHours {
   closed: boolean
 }
 
+export type OpenStatusOverride = 'auto' | 'open' | 'closed'
+
 export interface HoursConfig {
   id: string
   regular: DayHours[]
   holidays: { date: string; name: string; closed: boolean }[]
   vacations: { start: string; end: string; note: string }[]
   emergencyNote: string
+  /** auto = según horario/feriados. open/closed fuerza el indicador público. */
+  statusOverride: OpenStatusOverride
+  statusNote: string
 }
 
 export interface Reservation {

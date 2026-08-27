@@ -35,12 +35,7 @@ export function SchemaOrg() {
         opens: d.open,
         closes: d.close,
       })),
-    sameAs: [
-      site.social.facebook,
-      site.social.instagram,
-      site.social.youtube,
-      site.social.tiktok,
-    ]
+    sameAs: [site.social.facebook, site.social.instagram]
       .map((url) => sanitizeHttpUrl(url))
       .filter(Boolean),
     priceRange: '$$',
