@@ -110,10 +110,17 @@ function withLocalServiceImages(items: Service[]): Service[] {
 }
 
 function withLocalGallery(items: GalleryItem[]): GalleryItem[] {
-  if (!items.length || items.every((item) => isStockMediaUrl(item.image))) {
-    return seedGallery
-  }
-  return items
+  const source =
+    !items.length || items.every((item) => isStockMediaUrl(item.image))
+      ? seedGallery
+      : items
+  return source.map((item) => {
+    const category = /actividad/i.test(item.category)
+      ? 'Pacientes'
+      : item.category
+    const title = /actividad/i.test(item.title) ? 'Pacientes' : item.title
+    return { ...item, category, title }
+  })
 }
 
 function withLocalHero(hero: HeroContent): HeroContent {

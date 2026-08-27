@@ -1,40 +1,55 @@
-import { initializeApp } from 'firebase/app'
+import { initializeApp, type FirebaseApp } from 'firebase/app'
 import {
   browserLocalPersistence,
   getAuth,
   setPersistence,
+  type Auth,
 } from 'firebase/auth'
-import { getFirestore } from 'firebase/firestore'
-import { getStorage } from 'firebase/storage'
+import { getFirestore, type Firestore } from 'firebase/firestore'
+import { getStorage, type FirebaseStorage } from 'firebase/storage'
 
 const firebaseConfig = {
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
-  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
-  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
-  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
-  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
-  appId: import.meta.env.VITE_FIREBASE_APP_ID,
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY as string | undefined,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN as string | undefined,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID as string | undefined,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET as string | undefined,
+  messagingSenderId: import.meta.env
+    .VITE_FIREBASE_MESSAGING_SENDER_ID as string | undefined,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID as string | undefined,
 }
 
-if (!firebaseConfig.apiKey || !firebaseConfig.projectId) {
-  throw new Error(
-    'Faltan variables de entorno de Firebase. Configurá el archivo .env (local) o las Environment Variables del hosting.',
-  )
-}
+/** Si faltan vars en el build (p. ej. Vercel), el sitio público usa contenido local. */
+export const hasFirebaseConfig = Boolean(
+  firebaseConfig.apiKey && firebaseConfig.projectId,
+)
 
-/** UID autorizado del panel (solo identificador público de Auth, no es una contraseña). */
 export const ADMIN_UID =
   (import.meta.env.VITE_ADMIN_UID as string | undefined)?.trim() ||
   '0RWsbSfbtycAnxmaik1wdAz4SRr2'
 
 export const ADMIN_EMAIL = 'ecovetaspotoles@gmail.com'
 
-export const app = initializeApp(firebaseConfig)
-export const auth = getAuth(app)
-export const db = getFirestore(app)
-export const storage = getStorage(app)
+let app: FirebaseApp | null = null
+let auth: Auth | null = null
+let db: Firestore | null = null
+let storage: FirebaseStorage | null = null
 
-void setPersistence(auth, browserLocalPersistence)
+if (hasFirebaseConfig) {
+  app = initializeApp({
+    apiKey: firebaseConfig.apiKey,
+    authDomain: firebaseConfig.authDomain,
+    projectId: firebaseConfig.projectId,
+    storageBucket: firebaseConfig.storageBucket,
+    messagingSenderId: firebaseConfig.messagingSenderId,
+    appId: firebaseConfig.appId,
+  })
+  auth = getAuth(app)
+  db = getFirestore(app)
+  storage = getStorage(app)
+  void setPersistence(auth, browserLocalPersistence)
+}
+
+export { app, auth, db, storage }
 
 export function isAuthorizedAdmin(user: {
   uid: string
@@ -42,8 +57,5 @@ export function isAuthorizedAdmin(user: {
 } | null) {
   if (!user) return false
   const email = user.email?.toLowerCase().trim()
-  return (
-    user.uid === ADMIN_UID &&
-    email === ADMIN_EMAIL.toLowerCase()
-  )
+  return user.uid === ADMIN_UID && email === ADMIN_EMAIL.toLowerCase()
 }

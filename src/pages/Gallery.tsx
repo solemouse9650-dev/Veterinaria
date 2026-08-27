@@ -14,6 +14,7 @@ export function Gallery() {
   const { gallery } = useSite()
   const [active, setActive] = useState<GalleryItem | null>(null)
   const [filter, setFilter] = useState<(typeof filters)[number]>('Todos')
+  const [failedMedia, setFailedMedia] = useState<Record<string, boolean>>({})
 
   const items = useMemo(() => {
     const sorted = [...gallery].sort((a, b) => a.order - b.order)
@@ -65,18 +66,31 @@ export function Gallery() {
                   className="group relative w-full overflow-hidden rounded-3xl focus-ring"
                 >
                   {item.type === 'video' ? (
-                    <div className="relative">
-                      <video
-                        src={item.image}
-                        className="aspect-[4/5] w-full object-cover"
-                        muted
-                        playsInline
-                        preload="metadata"
-                        aria-hidden
-                      />
-                      <span className="absolute inset-0 flex items-center justify-center bg-ink/25">
-                        <Play className="h-12 w-12 text-white" />
-                      </span>
+                    failedMedia[item.id] ? (
+                      <div className="flex aspect-[4/5] items-center justify-center bg-brand-900 text-sm text-white">
+                        Paciente
+                      </div>
+                    ) : (
+                      <div className="relative">
+                        <video
+                          src={item.image}
+                          className="aspect-[4/5] w-full object-cover"
+                          muted
+                          playsInline
+                          preload="metadata"
+                          aria-hidden
+                          onError={() =>
+                            setFailedMedia((prev) => ({ ...prev, [item.id]: true }))
+                          }
+                        />
+                        <span className="absolute inset-0 flex items-center justify-center bg-ink/25">
+                          <Play className="h-12 w-12 text-white" />
+                        </span>
+                      </div>
+                    )
+                  ) : failedMedia[item.id] ? (
+                    <div className="flex aspect-[4/5] items-center justify-center bg-brand-50 text-sm text-muted">
+                      Imagen no disponible
                     </div>
                   ) : (
                     <img
@@ -88,6 +102,9 @@ export function Gallery() {
                       }
                       className="aspect-[4/5] w-full object-cover transition duration-500 group-hover:scale-105"
                       loading="lazy"
+                      onError={() =>
+                        setFailedMedia((prev) => ({ ...prev, [item.id]: true }))
+                      }
                     />
                   )}
                   <span className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-ink/80 to-transparent p-4 text-left text-sm font-semibold text-white">

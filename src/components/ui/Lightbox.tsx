@@ -1,6 +1,6 @@
 import { AnimatePresence, motion } from 'framer-motion'
 import { X } from 'lucide-react'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 
 interface LightboxProps {
   open: boolean
@@ -11,6 +11,11 @@ interface LightboxProps {
 }
 
 export function Lightbox({ open, src, alt, type = 'image', onClose }: LightboxProps) {
+  const [failed, setFailed] = useState(false)
+
+  useEffect(() => {
+    setFailed(false)
+  }, [src, open])
   useEffect(() => {
     if (!open) return
     const onKey = (e: KeyboardEvent) => {
@@ -52,7 +57,11 @@ export function Lightbox({ open, src, alt, type = 'image', onClose }: LightboxPr
             className="max-h-[85vh] w-full max-w-5xl overflow-hidden rounded-2xl"
             onClick={(e) => e.stopPropagation()}
           >
-            {type === 'video' ? (
+            {failed ? (
+              <p className="bg-ink p-8 text-center text-white">
+                No se pudo cargar este archivo.
+              </p>
+            ) : type === 'video' ? (
               <video
                 src={src}
                 title={alt}
@@ -60,9 +69,15 @@ export function Lightbox({ open, src, alt, type = 'image', onClose }: LightboxPr
                 controls
                 playsInline
                 preload="metadata"
+                onError={() => setFailed(true)}
               />
             ) : (
-              <img src={src} alt={alt} className="max-h-[85vh] w-full object-contain" />
+              <img
+                src={src}
+                alt={alt}
+                className="max-h-[85vh] w-full object-contain"
+                onError={() => setFailed(true)}
+              />
             )}
           </motion.div>
         </motion.div>

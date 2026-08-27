@@ -25,7 +25,7 @@ export function GalleryAdmin() {
     title: '',
     image: '',
     type: 'image' as 'image' | 'video',
-    category: 'Instalaciones',
+    category: 'Pacientes',
     order: 1,
   })
 
@@ -53,6 +53,11 @@ export function GalleryAdmin() {
       window.alert('La imagen no puede superar los 5 MB.')
       return
     }
+    if (!storage) {
+      window.alert('La carga de archivos no está disponible en este momento.')
+      return
+    }
+    const firebaseStorage = storage
     setUploading(true)
     try {
       const ext =
@@ -64,7 +69,7 @@ export function GalleryAdmin() {
               ? 'gif'
               : 'jpg'
       const path = `gallery/${crypto.randomUUID()}.${ext}`
-      const storageRef = ref(storage, path)
+      const storageRef = ref(firebaseStorage, path)
       await uploadBytes(storageRef, file, { contentType: file.type })
       const url = await getDownloadURL(storageRef)
       setForm((f) => ({ ...f, image: url, type: 'image' }))
@@ -89,7 +94,7 @@ export function GalleryAdmin() {
       title: '',
       image: '',
       type: 'image',
-      category: 'Instalaciones',
+      category: 'Pacientes',
       order: 1,
     })
     await load()
@@ -112,7 +117,15 @@ export function GalleryAdmin() {
       </div>
       <div className="grid gap-4 rounded-2xl border border-line bg-white p-5 md:grid-cols-2">
         <Input label="Título" value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} />
-        <Input label="Categoría" value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })} />
+        <Select
+          label="Categoría"
+          value={form.category}
+          onChange={(e) => setForm({ ...form, category: e.target.value })}
+          options={[
+            { value: 'Pacientes', label: 'Pacientes' },
+            { value: 'Instalaciones', label: 'Instalaciones' },
+          ]}
+        />
         <Select
           label="Tipo"
           value={form.type}

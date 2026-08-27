@@ -114,9 +114,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    const unsub = onAuthStateChanged(auth, (next) => {
+    if (!auth) {
+      setLoading(false)
+      return
+    }
+    const firebaseAuth = auth
+    const unsub = onAuthStateChanged(firebaseAuth, (next) => {
       if (next && !isAuthorizedAdmin(next)) {
-        void signOut(auth)
+        void signOut(firebaseAuth)
         setUser(null)
         setLoading(false)
         return
@@ -128,6 +133,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [])
 
   const login = useCallback(async (email: string, password: string) => {
+    if (!auth) {
+      throw new Error('El panel no está disponible en este momento.')
+    }
+    const firebaseAuth = auth
     const lock = getLoginLock()
     if (lock.locked) {
       const mins = Math.ceil(lock.remainingMs / 60000)
@@ -138,12 +147,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     try {
       const cred = await signInWithEmailAndPassword(
-        auth,
+        firebaseAuth,
         email.trim().toLowerCase(),
         password,
       )
       if (!isAuthorizedAdmin(cred.user)) {
-        await signOut(auth)
+        await signOut(firebaseAuth)
         registerFailedLogin()
         throw new Error('Correo o contraseña incorrectos.')
       }
@@ -159,20 +168,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, [])
 
-  const logout = useCallback(() => signOut(auth), [])
+  const logout = useCallback(() => (auth ? signOut(auth) : Promise.resolve()), [])
 
   const resetPassword = useCallback(async (email: string) => {
     const normalized = email.trim().toLowerCase()
     if (normalized !== ADMIN_EMAIL.toLowerCase()) {
-      // No revelar si el correo existe o no.
       return
     }
+    if (!auth) return
     await sendPasswordResetEmail(auth, normalized)
   }, [])
 
   const changePassword = useCallback(
     async (currentPassword: string, newPassword: string) => {
-      const current = auth.currentUser
+      const current = auth?.currentUser
       if (!current?.email || !isAuthorizedAdmin(current)) {
         throw new Error('Sesión no válida.')
       }

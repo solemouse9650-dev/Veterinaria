@@ -28,11 +28,11 @@ export const CLINIC_PHOTOS = [
   },
   {
     src: '/fotovet/instalaciones/vetefoto-3.jpeg',
-    alt: 'Espacio interior de EcoVet Clínica Veterinaria',
+    alt: 'Equipamiento de radiografía digital de EcoVet Clínica Veterinaria',
   },
   {
     src: '/fotovet/instalaciones/vetefoto-4.jpeg',
-    alt: 'Instalaciones de EcoVet Clínica Veterinaria',
+    alt: 'Sala de radiografía de EcoVet Clínica Veterinaria',
   },
   {
     src: '/fotovet/instalaciones/vetefoto-5.jpeg',
@@ -40,7 +40,7 @@ export const CLINIC_PHOTOS = [
   },
   {
     src: '/fotovet/instalaciones/vetefoto-6.jpeg',
-    alt: 'Espacio de atención de EcoVet Clínica Veterinaria',
+    alt: 'Consultorio y espacio de análisis de EcoVet Clínica Veterinaria',
   },
   {
     src: '/fotovet/instalaciones/vetefoto-7.jpeg',
@@ -65,11 +65,11 @@ export const HOME_PATIENT_PREVIEW = PATIENT_PHOTOS.filter((_, index) =>
 export const PATIENT_VIDEOS = [
   {
     src: '/fotovet/pacientes/fotovet-8.mp4',
-    alt: 'Actividad en EcoVet Clínica Veterinaria',
+    alt: 'Paciente en EcoVet Clínica Veterinaria',
   },
   {
     src: '/fotovet/pacientes/fotovet-10.mp4',
-    alt: 'Actividad en EcoVet Clínica Veterinaria',
+    alt: 'Paciente en EcoVet Clínica Veterinaria',
   },
 ] as const
 
@@ -92,7 +92,7 @@ export const localGallery: GalleryItem[] = [
   })),
   ...PATIENT_VIDEOS.map((video, i) => ({
     id: `gal-video-${i + 1}`,
-    title: 'Actividades EcoVet',
+    title: 'Pacientes',
     image: video.src,
     type: 'video' as const,
     category: 'Pacientes',

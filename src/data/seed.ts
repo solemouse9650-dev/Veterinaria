@@ -107,28 +107,6 @@ export const heroContent: HeroContent = {
   ],
 }
 
-const img = {
-  consulta:
-    'https://images.unsplash.com/photo-1576201832337-cebc1a8c8d0d?auto=format&fit=crop&w=1200&q=80',
-  vacuna:
-    'https://images.unsplash.com/photo-1612531386530-97286d97c2d2?auto=format&fit=crop&w=1200&q=80',
-  cirugia:
-    'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?auto=format&fit=crop&w=1200&q=80',
-  lab: 'https://images.unsplash.com/photo-1579154204601-01588f351e67?auto=format&fit=crop&w=1200&q=80',
-  eco: 'https://images.unsplash.com/photo-1516734212186-a967f81ad0d7?auto=format&fit=crop&w=1200&q=80',
-  rx: 'https://images.unsplash.com/photo-1551076805-e1869033e561?auto=format&fit=crop&w=1200&q=80',
-  dental:
-    'https://images.unsplash.com/photo-1530281700549-e82e7bf110d6?auto=format&fit=crop&w=1200&q=80',
-  alimento:
-    'https://images.unsplash.com/photo-1589924691995-400dc9ecc119?auto=format&fit=crop&w=1200&q=80',
-  farmacia:
-    'https://images.unsplash.com/photo-1587854692152-cbe660dbde88?auto=format&fit=crop&w=1200&q=80',
-  cardio:
-    'https://images.unsplash.com/photo-1601758228041-f3b2795255f1?auto=format&fit=crop&w=1200&q=80',
-  peluqueria:
-    'https://images.unsplash.com/photo-1583511655857-d19b40a7a54e?auto=format&fit=crop&w=1200&q=80',
-}
-
 function svc(
   partial: Omit<Service, 'price' | 'duration' | 'active' | 'description'> & {
     description?: string
@@ -162,7 +140,7 @@ export const services: Service[] = [
     name: 'Vacunaciones',
     slug: 'vacunaciones',
     shortDescription: 'Vacunaciones',
-    image: img.vacuna,
+    image: PATIENT_PHOTOS[0].src,
     category: 'Prevención',
     featured: true,
     order: 2,
@@ -172,7 +150,7 @@ export const services: Service[] = [
     name: 'Ecografía',
     slug: 'ecografia',
     shortDescription: 'Ecografía',
-    image: img.eco,
+    image: PATIENT_PHOTOS[7].src,
     category: 'Diagnóstico',
     featured: true,
     order: 3,
@@ -182,7 +160,7 @@ export const services: Service[] = [
     name: 'Radiografía digital',
     slug: 'radiografia-digital',
     shortDescription: 'Radiografía digital',
-    image: img.rx,
+    image: CLINIC_PHOTOS[3].src,
     category: 'Diagnóstico',
     featured: true,
     order: 4,
@@ -202,7 +180,7 @@ export const services: Service[] = [
     name: 'Cardiología',
     slug: 'cardiologia',
     shortDescription: 'Cardiología',
-    image: img.cardio,
+    image: PATIENT_PHOTOS[5].src,
     category: 'Cardiología',
     featured: true,
     order: 6,
@@ -212,7 +190,7 @@ export const services: Service[] = [
     name: 'Ecocardiografía',
     slug: 'ecocardiografia',
     shortDescription: 'Ecocardiografía',
-    image: img.eco,
+    image: PATIENT_PHOTOS[7].src,
     category: 'Cardiología',
     featured: false,
     order: 7,
@@ -222,7 +200,7 @@ export const services: Service[] = [
     name: 'Electrocardiograma',
     slug: 'electrocardiograma',
     shortDescription: 'Electrocardiograma',
-    image: img.cardio,
+    image: PATIENT_PHOTOS[5].src,
     category: 'Cardiología',
     featured: false,
     order: 8,
@@ -232,7 +210,7 @@ export const services: Service[] = [
     name: 'Medición de presión arterial',
     slug: 'medicion-de-presion-arterial',
     shortDescription: 'Medición de presión arterial',
-    image: img.cardio,
+    image: PATIENT_PHOTOS[5].src,
     category: 'Cardiología',
     featured: false,
     order: 9,
@@ -242,7 +220,7 @@ export const services: Service[] = [
     name: 'Odontología canina y felina',
     slug: 'odontologia-canina-y-felina',
     shortDescription: 'Odontología canina y felina',
-    image: img.dental,
+    image: PATIENT_PHOTOS[2].src,
     category: 'Odontología',
     featured: true,
     order: 10,
@@ -252,7 +230,7 @@ export const services: Service[] = [
     name: 'Análisis clínicos',
     slug: 'analisis-clinicos',
     shortDescription: 'Análisis clínicos',
-    image: img.lab,
+    image: CLINIC_PHOTOS[5].src,
     category: 'Diagnóstico',
     featured: false,
     order: 11,
@@ -262,7 +240,7 @@ export const services: Service[] = [
     name: 'Farmacia',
     slug: 'farmacia',
     shortDescription: 'Farmacia',
-    image: img.farmacia,
+    image: CLINIC_PHOTOS[6].src,
     category: 'Farmacia y alimentos',
     featured: false,
     order: 12,
@@ -283,7 +261,7 @@ export const services: Service[] = [
     slug: 'proximamente-estetica-canina-peluqueria',
     shortDescription: 'Próximamente estética canina (peluquería)',
     description: 'Próximamente estética canina (peluquería)',
-    image: img.peluqueria,
+    image: PATIENT_PHOTOS[1].src,
     category: 'Próximamente',
     featured: false,
     order: 14,
@@ -302,7 +280,7 @@ export const specialties: Specialty[] = [
     id: 'sp-cardiologia',
     name: 'Cardiología',
     description: 'Cardiología',
-    image: img.cardio,
+    image: PATIENT_PHOTOS[5].src,
     features: [
       'Cardiología',
       'Ecocardiografía',
@@ -314,7 +292,7 @@ export const specialties: Specialty[] = [
     id: 'sp-imagenes',
     name: 'Diagnóstico por imágenes',
     description: 'Ecografía y radiografía digital',
-    image: img.eco,
+    image: CLINIC_PHOTOS[2].src,
     features: ['Ecografía', 'Radiografía digital'],
   },
   {
@@ -328,7 +306,7 @@ export const specialties: Specialty[] = [
     id: 'sp-odontologia',
     name: 'Odontología canina y felina',
     description: 'Odontología canina y felina',
-    image: img.dental,
+    image: PATIENT_PHOTOS[2].src,
     features: ['Odontología canina y felina'],
   },
 ]

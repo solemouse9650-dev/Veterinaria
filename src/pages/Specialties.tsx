@@ -35,6 +35,7 @@ export function Specialties() {
                     src={item.image}
                     alt={item.name}
                     className="h-48 w-full object-cover sm:h-56 md:h-full"
+                    loading="lazy"
                   />
                   <div className="flex flex-col justify-center p-4 sm:p-6">
                     <h2 className="font-display text-xl font-semibold sm:text-2xl">

@@ -26,6 +26,10 @@ export function ServiceCard({ service, index = 0 }: ServiceCardProps) {
           alt={service.name}
           className="h-full w-full object-cover transition duration-700 group-hover:scale-105"
           loading="lazy"
+          decoding="async"
+          onError={(e) => {
+            e.currentTarget.style.visibility = 'hidden'
+          }}
         />
         <span className="absolute left-4 top-4 rounded-full bg-white/90 px-3 py-1 text-xs font-semibold text-brand-800 backdrop-blur">
           {service.category}
