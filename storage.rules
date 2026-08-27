@@ -3,8 +3,8 @@ service firebase.storage {
   match /b/{bucket}/o {
     function isAdmin() {
       return request.auth != null
-        && request.auth.uid == 'lLuTwK8IAORJNe3UTgtH2VtaUO12'
-        && request.auth.token.email == 'ecovetaspotoles@gmail.com';
+        && request.auth.uid == 'wDlf6BvaSpQTUmTqk7aJAd9fX8i2'
+        && request.auth.token.email == 'ecovetapostoles@gmail.com';
     }
 
     function isSafeImage() {

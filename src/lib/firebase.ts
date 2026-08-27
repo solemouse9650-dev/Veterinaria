@@ -25,9 +25,9 @@ export const hasFirebaseConfig = Boolean(
 
 export const ADMIN_UID =
   (import.meta.env.VITE_ADMIN_UID as string | undefined)?.trim() ||
-  'lLuTwK8IAORJNe3UTgtH2VtaUO12'
+  'wDlf6BvaSpQTUmTqk7aJAd9fX8i2'
 
-export const ADMIN_EMAIL = 'ecovetaspotoles@gmail.com'
+export const ADMIN_EMAIL = 'ecovetapostoles@gmail.com'
 
 let app: FirebaseApp | null = null
 let auth: Auth | null = null
