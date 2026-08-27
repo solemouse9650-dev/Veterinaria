@@ -25,7 +25,7 @@ export const hasFirebaseConfig = Boolean(
 
 export const ADMIN_UID =
   (import.meta.env.VITE_ADMIN_UID as string | undefined)?.trim() ||
-  '0RWsbSfbtycAnxmaik1wdAz4SRr2'
+  'lLuTwK8IAORJNe3UTgtH2VtaUO12'
 
 export const ADMIN_EMAIL = 'ecovetaspotoles@gmail.com'
 
