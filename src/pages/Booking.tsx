@@ -12,8 +12,9 @@ import { Select } from '@/components/ui/Select'
 import { Textarea } from '@/components/ui/Textarea'
 import { useSite } from '@/contexts/SiteContext'
 import { timeSlots } from '@/data/seed'
+import { sanitizeEmail, sanitizePhone, sanitizeText } from '@/lib/sanitize'
 import { formatDate, formatPrice, whatsappUrl } from '@/lib/utils'
-import { createReservation, logActivity } from '@/services/firestore'
+import { createReservation } from '@/services/firestore'
 
 const schema = z.object({
   firstName: z.string().min(2, 'Requerido'),
@@ -92,48 +93,54 @@ export function Booking() {
     const service = services.find((s) => s.id === data.serviceId)
     const vet = team.find((t) => t.id === data.veterinarianId)
     const now = new Date().toISOString()
+    const firstName = sanitizeText(data.firstName, 80)
+    const lastName = sanitizeText(data.lastName, 80)
+    const email = sanitizeEmail(data.email)
+    const phone = sanitizePhone(data.phone)
+    const petName = sanitizeText(data.petName, 80)
+    const species = sanitizeText(data.species, 40)
+    const breed = sanitizeText(data.breed, 80)
+    const age = sanitizeText(data.age, 40)
+    const weight = sanitizeText(data.weight, 40)
+    const notes = sanitizeText(data.notes || '', 1000)
     const id = await createReservation({
-      firstName: data.firstName,
-      lastName: data.lastName,
-      email: data.email,
-      phone: data.phone,
-      petName: data.petName,
-      species: data.species,
-      breed: data.breed,
-      age: data.age,
-      weight: data.weight,
-      serviceId: data.serviceId,
-      serviceName: service?.name || '',
-      date: data.date,
-      time: data.time,
-      veterinarianId: data.veterinarianId,
-      veterinarianName: vet?.name || '',
-      notes: data.notes || '',
+      firstName,
+      lastName,
+      email,
+      phone,
+      petName,
+      species,
+      breed,
+      age,
+      weight,
+      serviceId: sanitizeText(data.serviceId, 80),
+      serviceName: sanitizeText(service?.name || '', 120),
+      date: sanitizeText(data.date, 20),
+      time: sanitizeText(data.time, 10),
+      veterinarianId: sanitizeText(data.veterinarianId, 80),
+      veterinarianName: sanitizeText(vet?.name || '', 120),
+      notes,
       status: 'pendiente',
       createdAt: now,
       updatedAt: now,
       estimatedPrice: service?.price || 0,
     })
-    await logActivity(
-      'reserva',
-      `Nueva reserva de ${data.firstName} ${data.lastName} para ${data.petName}`,
-    )
     setConfirmation({
       id,
-      firstName: data.firstName,
-      lastName: data.lastName,
-      email: data.email,
-      phone: data.phone,
-      petName: data.petName,
-      species: data.species,
-      breed: data.breed,
-      age: data.age,
-      weight: data.weight,
+      firstName,
+      lastName,
+      email,
+      phone,
+      petName,
+      species,
+      breed,
+      age,
+      weight,
       serviceName: service?.name || '',
       date: data.date,
       time: data.time,
       veterinarianName: vet?.name || '',
-      notes: data.notes || '',
+      notes,
       estimatedPrice: service?.price || 0,
     })
     reset()

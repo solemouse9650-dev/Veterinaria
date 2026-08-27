@@ -3,9 +3,48 @@ service cloud.firestore {
   match /databases/{database}/documents {
     function isAdmin() {
       return request.auth != null && (
-        request.auth.uid == '4uP29AKNr9evZLbL1HrsOHGdrQH2' ||
-        request.auth.token.email == 'solemouse9650@gmail.com'
+        request.auth.uid == '0RWsbSfbtycAnxmaik1wdAz4SRr2' ||
+        request.auth.token.email == 'ecovetaspotoles@gmail.com'
       );
+    }
+
+    function isString(field, minLen, maxLen) {
+      return field is string
+        && field.size() >= minLen
+        && field.size() <= maxLen;
+    }
+
+    function validReservation() {
+      let d = request.resource.data;
+      return isString(d.firstName, 1, 80)
+        && isString(d.lastName, 1, 80)
+        && isString(d.email, 5, 120)
+        && isString(d.phone, 6, 40)
+        && isString(d.petName, 1, 80)
+        && isString(d.species, 1, 40)
+        && isString(d.breed, 1, 80)
+        && isString(d.age, 1, 40)
+        && isString(d.weight, 1, 40)
+        && isString(d.serviceId, 1, 80)
+        && isString(d.serviceName, 1, 120)
+        && isString(d.date, 8, 20)
+        && isString(d.time, 4, 10)
+        && isString(d.veterinarianId, 0, 80)
+        && isString(d.veterinarianName, 0, 120)
+        && isString(d.notes, 0, 1000)
+        && d.status == 'pendiente'
+        && d.estimatedPrice is number
+        && d.estimatedPrice >= 0
+        && d.estimatedPrice < 100000000;
+    }
+
+    function validContact() {
+      let d = request.resource.data;
+      return isString(d.name, 1, 120)
+        && isString(d.email, 5, 120)
+        && isString(d.phone, 6, 40)
+        && isString(d.message, 5, 2000)
+        && d.type == 'contact';
     }
 
     match /site/{document} {
@@ -49,12 +88,12 @@ service cloud.firestore {
     }
 
     match /reservations/{id} {
-      allow create: if true;
+      allow create: if validReservation();
       allow read, update, delete: if isAdmin();
     }
 
     match /clients/{id} {
-      allow create: if true;
+      allow create: if validContact();
       allow read, update, delete: if isAdmin();
     }
 

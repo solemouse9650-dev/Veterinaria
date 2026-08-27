@@ -16,6 +16,7 @@ const empty: Omit<TeamMember, 'id'> = {
   schedule: '',
   active: true,
   order: 1,
+  areas: [],
 }
 
 export function TeamAdmin() {
@@ -68,6 +69,21 @@ export function TeamAdmin() {
         <Input label="Horarios" value={form.schedule} onChange={(e) => setForm({ ...form, schedule: e.target.value })} />
         <Input label="Foto URL" value={form.image} onChange={(e) => setForm({ ...form, image: e.target.value })} />
         <Input label="Orden" type="number" value={form.order} onChange={(e) => setForm({ ...form, order: Number(e.target.value) })} />
+        <div className="md:col-span-2">
+          <Textarea
+            label="Áreas o servicios (uno por línea)"
+            value={(form.areas || []).join('\n')}
+            onChange={(e) =>
+              setForm({
+                ...form,
+                areas: e.target.value
+                  .split('\n')
+                  .map((line) => line.trim())
+                  .filter(Boolean),
+              })
+            }
+          />
+        </div>
         <div className="md:col-span-2">
           <Textarea label="Descripción" value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} />
         </div>

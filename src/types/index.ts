@@ -67,6 +67,7 @@ export interface TeamMember {
   schedule: string
   active: boolean
   order: number
+  areas?: string[]
 }
 
 export interface GalleryItem {

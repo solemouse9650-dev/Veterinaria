@@ -8,13 +8,16 @@ import {
   type ReactNode,
 } from 'react'
 import {
+  EmailAuthProvider,
   onAuthStateChanged,
+  reauthenticateWithCredential,
   sendPasswordResetEmail,
   signInWithEmailAndPassword,
   signOut,
+  updatePassword,
   type User,
 } from 'firebase/auth'
-import { auth, isAuthorizedAdmin } from '@/lib/firebase'
+import { ADMIN_EMAIL, auth, isAuthorizedAdmin } from '@/lib/firebase'
 
 interface AuthContextValue {
   user: User | null
@@ -23,9 +26,17 @@ interface AuthContextValue {
   login: (email: string, password: string) => Promise<void>
   logout: () => Promise<void>
   resetPassword: (email: string) => Promise<void>
+  changePassword: (
+    currentPassword: string,
+    newPassword: string,
+  ) => Promise<void>
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null)
+
+const LOGIN_ATTEMPTS_KEY = 'ecovet_admin_login_attempts'
+const MAX_ATTEMPTS = 5
+const LOCK_MS = 5 * 60 * 1000
 
 function mapAuthError(error: unknown): string {
   const code =
@@ -47,10 +58,48 @@ function mapAuthError(error: unknown): string {
       return 'Esta cuenta está deshabilitada.'
     case 'auth/invalid-email':
       return 'El correo no es válido.'
+    case 'auth/weak-password':
+      return 'La nueva contraseña es demasiado débil. Usá al menos 8 caracteres.'
+    case 'auth/requires-recent-login':
+      return 'Por seguridad, volvé a iniciar sesión e intentá de nuevo.'
     default:
       if (error instanceof Error && error.message) return error.message
-      return 'No se pudo iniciar sesión. Intentá nuevamente.'
+      return 'No se pudo completar la operación. Intentá nuevamente.'
   }
+}
+
+function getLoginLock(): { locked: boolean; remainingMs: number } {
+  try {
+    const raw = sessionStorage.getItem(LOGIN_ATTEMPTS_KEY)
+    if (!raw) return { locked: false, remainingMs: 0 }
+    const data = JSON.parse(raw) as { count: number; ts: number }
+    if (data.count >= MAX_ATTEMPTS) {
+      const remaining = LOCK_MS - (Date.now() - data.ts)
+      if (remaining > 0) return { locked: true, remainingMs: remaining }
+      sessionStorage.removeItem(LOGIN_ATTEMPTS_KEY)
+    }
+  } catch {
+    sessionStorage.removeItem(LOGIN_ATTEMPTS_KEY)
+  }
+  return { locked: false, remainingMs: 0 }
+}
+
+function registerFailedLogin() {
+  try {
+    const raw = sessionStorage.getItem(LOGIN_ATTEMPTS_KEY)
+    const prev = raw ? (JSON.parse(raw) as { count: number; ts: number }) : null
+    const count = (prev?.count || 0) + 1
+    sessionStorage.setItem(
+      LOGIN_ATTEMPTS_KEY,
+      JSON.stringify({ count, ts: Date.now() }),
+    )
+  } catch {
+    // ignore storage errors
+  }
+}
+
+function clearLoginAttempts() {
+  sessionStorage.removeItem(LOGIN_ATTEMPTS_KEY)
 }
 
 export function AuthProvider({ children }: { children: ReactNode }) {
@@ -59,6 +108,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, (next) => {
+      if (next && !isAuthorizedAdmin(next)) {
+        void signOut(auth)
+        setUser(null)
+        setLoading(false)
+        return
+      }
       setUser(next)
       setLoading(false)
     })
@@ -66,6 +121,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [])
 
   const login = useCallback(async (email: string, password: string) => {
+    const lock = getLoginLock()
+    if (lock.locked) {
+      const mins = Math.ceil(lock.remainingMs / 60000)
+      throw new Error(
+        `Demasiados intentos fallidos. Esperá ${mins} minuto(s) e intentá de nuevo.`,
+      )
+    }
+
     try {
       const cred = await signInWithEmailAndPassword(
         auth,
@@ -74,17 +137,49 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       )
       if (!isAuthorizedAdmin(cred.user)) {
         await signOut(auth)
+        registerFailedLogin()
         throw new Error('Usuario no autorizado para el panel administrativo.')
       }
+      clearLoginAttempts()
     } catch (error) {
+      if (
+        !(error instanceof Error) ||
+        !error.message.includes('Demasiados intentos')
+      ) {
+        registerFailedLogin()
+      }
       throw new Error(mapAuthError(error))
     }
   }, [])
 
   const logout = useCallback(() => signOut(auth), [])
 
-  const resetPassword = useCallback(
-    (email: string) => sendPasswordResetEmail(auth, email.trim().toLowerCase()),
+  const resetPassword = useCallback(async (email: string) => {
+    const normalized = email.trim().toLowerCase()
+    if (normalized !== ADMIN_EMAIL.toLowerCase()) {
+      // No revelar si el correo existe o no.
+      return
+    }
+    await sendPasswordResetEmail(auth, normalized)
+  }, [])
+
+  const changePassword = useCallback(
+    async (currentPassword: string, newPassword: string) => {
+      const current = auth.currentUser
+      if (!current?.email || !isAuthorizedAdmin(current)) {
+        throw new Error('Sesión no válida.')
+      }
+      try {
+        const credential = EmailAuthProvider.credential(
+          current.email,
+          currentPassword,
+        )
+        await reauthenticateWithCredential(current, credential)
+        await updatePassword(current, newPassword)
+      } catch (error) {
+        throw new Error(mapAuthError(error))
+      }
+    },
     [],
   )
 
@@ -96,8 +191,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       login,
       logout,
       resetPassword,
+      changePassword,
     }),
-    [user, loading, login, logout, resetPassword],
+    [user, loading, login, logout, resetPassword, changePassword],
   )
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

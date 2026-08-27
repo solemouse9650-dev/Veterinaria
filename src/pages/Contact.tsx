@@ -9,8 +9,9 @@ import { Input } from '@/components/ui/Input'
 import { SectionHeading } from '@/components/ui/SectionHeading'
 import { Textarea } from '@/components/ui/Textarea'
 import { useSite } from '@/contexts/SiteContext'
+import { sanitizeEmail, sanitizePhone, sanitizeText } from '@/lib/sanitize'
 import { whatsappUrl } from '@/lib/utils'
-import { createDoc, logActivity } from '@/services/firestore'
+import { createDoc } from '@/services/firestore'
 
 const schema = z.object({
   name: z.string().min(2, 'Ingresá tu nombre'),
@@ -33,11 +34,13 @@ export function Contact() {
 
   const onSubmit = async (data: FormData) => {
     await createDoc('clients', {
-      ...data,
+      name: sanitizeText(data.name, 120),
+      email: sanitizeEmail(data.email),
+      phone: sanitizePhone(data.phone),
+      message: sanitizeText(data.message, 2000),
       type: 'contact',
       createdAt: new Date().toISOString(),
     })
-    await logActivity('contacto', `${data.name} envió un mensaje de contacto`)
     setSent(true)
     reset()
   }

@@ -30,6 +30,7 @@ import {
   team as seedTeam,
   testimonials as seedTestimonials,
 } from '@/data/seed'
+import { isStockMediaUrl, TEAM_PHOTOS } from '@/data/media'
 import {
   fetchBlog,
   fetchFaqs,
@@ -58,6 +59,69 @@ interface SiteContextValue {
 }
 
 const SiteContext = createContext<SiteContextValue | null>(null)
+
+function normalizeName(value: string) {
+  return value
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z]/g, '')
+}
+
+function withLocalTeamPhotos(members: TeamMember[]): TeamMember[] {
+  return members.map((member) => {
+    const seed = seedTeam.find(
+      (item) =>
+        item.id === member.id ||
+        normalizeName(item.name).includes(normalizeName(member.name)) ||
+        normalizeName(member.name).includes(normalizeName(item.name)),
+    )
+    const name = normalizeName(member.name)
+    const photoFromName = name.includes('claudia')
+      ? TEAM_PHOTOS.claudia
+      : name.includes('martin') || name.includes('zuchino')
+        ? TEAM_PHOTOS.martin
+        : name.includes('alejandro') || name.includes('gimenez')
+          ? TEAM_PHOTOS.alejandro
+          : ''
+    const image = isStockMediaUrl(member.image)
+      ? seed?.image || photoFromName || member.image
+      : member.image
+    const areas =
+      member.areas && member.areas.length > 0 ? member.areas : seed?.areas
+    return { ...member, image, ...(areas ? { areas } : {}) }
+  })
+}
+
+function withLocalServiceImages(items: Service[]): Service[] {
+  return items.map((service) => {
+    const seed = seedServices.find(
+      (item) => item.id === service.id || item.slug === service.slug,
+    )
+    if (
+      seed &&
+      isStockMediaUrl(service.image) &&
+      !isStockMediaUrl(seed.image)
+    ) {
+      return { ...service, image: seed.image }
+    }
+    return service
+  })
+}
+
+function withLocalGallery(items: GalleryItem[]): GalleryItem[] {
+  if (!items.length || items.every((item) => isStockMediaUrl(item.image))) {
+    return seedGallery
+  }
+  return items
+}
+
+function withLocalHero(hero: HeroContent): HeroContent {
+  if (isStockMediaUrl(hero.image)) {
+    return { ...hero, image: seedHero.image }
+  }
+  return hero
+}
 
 export function SiteProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true)
@@ -97,6 +161,16 @@ export function SiteProvider({ children }: { children: ReactNode }) {
         fetchHours(),
       ])
 
+      const isDomicilio = (s: { slug?: string; name?: string }) => {
+        const slug = (s.slug || '').toLowerCase()
+        const name = (s.name || '').toLowerCase()
+        return (
+          slug === 'domicilios' ||
+          slug.includes('domicilio') ||
+          name.includes('domicilio')
+        )
+      }
+
       // Si Firestore aún tiene el contenido demo anterior, usar el seed oficial.
       const legacyContent =
         !siteData.address?.includes('Suipacha') ||
@@ -116,10 +190,16 @@ export function SiteProvider({ children }: { children: ReactNode }) {
         setHours(seedHours)
       } else {
         setSite(siteData)
-        setHero(heroData)
-        setServices(servicesData.filter((s) => s.active !== false))
-        setTeam(teamData.filter((t) => t.active !== false))
-        setGallery(galleryData)
+        setHero(withLocalHero(heroData))
+        setServices(
+          withLocalServiceImages(
+            servicesData.filter(
+              (s) => s.active !== false && !isDomicilio(s),
+            ),
+          ),
+        )
+        setTeam(withLocalTeamPhotos(teamData.filter((t) => t.active !== false)))
+        setGallery(withLocalGallery(galleryData))
         setBlog(blogData.filter((b) => b.published !== false))
         setFaqs(faqsData.filter((f) => f.active !== false))
         setTestimonials(testimonialsData.filter((t) => t.active !== false))

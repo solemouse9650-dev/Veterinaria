@@ -11,12 +11,14 @@ import { useRef } from 'react'
 import { Link } from 'react-router-dom'
 import { SEO } from '@/components/seo/SEO'
 import { ServiceCard } from '@/components/services/ServiceCard'
+import { TeamMemberCard } from '@/components/team/TeamMemberCard'
 import { Accordion } from '@/components/ui/Accordion'
 import { AnimatedSection } from '@/components/ui/AnimatedSection'
 import { Button } from '@/components/ui/Button'
 import { Counter } from '@/components/ui/Counter'
 import { SectionHeading } from '@/components/ui/SectionHeading'
 import { useSite } from '@/contexts/SiteContext'
+import { CLINIC_PHOTOS, HOME_PATIENT_PREVIEW } from '@/data/media'
 import { whatsappUrl } from '@/lib/utils'
 
 export function Home() {
@@ -42,8 +44,9 @@ export function Home() {
         <motion.div style={{ y }} className="absolute inset-0">
           <img
             src={hero.image}
-            alt="Veterinaria profesional atendiendo mascotas en EcoVet"
-            className="h-full w-full object-cover object-[center_30%]"
+            alt="Recepción de EcoVet Clínica Veterinaria en Apóstoles"
+            className="h-full w-full object-cover object-center"
+            fetchPriority="high"
           />
           <div className="absolute inset-0 bg-gradient-to-b from-ink/85 via-ink/70 to-brand-900/50 md:bg-gradient-to-r md:from-ink/90 md:via-ink/70 md:to-brand-900/35" />
         </motion.div>
@@ -214,9 +217,10 @@ export function Home() {
           <AnimatedSection>
             <div className="overflow-hidden rounded-[1.5rem] sm:rounded-[2rem]">
               <img
-                src="https://images.unsplash.com/photo-1576201832337-cebc1a8c8d0d?auto=format&fit=crop&w=1400&q=80"
-                alt="Equipo veterinario de EcoVet en consulta"
+                src={CLINIC_PHOTOS[0].src}
+                alt={CLINIC_PHOTOS[0].alt}
                 className="aspect-[4/3] h-full w-full object-cover lg:aspect-auto lg:min-h-[420px]"
+                loading="lazy"
               />
             </div>
           </AnimatedSection>
@@ -247,6 +251,63 @@ export function Home() {
         </div>
       </section>
 
+      <section className="section-pad bg-white">
+        <div className="container-page">
+          <SectionHeading
+            eyebrow="Pacientes"
+            title="Quienes nos visitan"
+            description="Algunos de los pacientes atendidos en EcoVet. Conocé más en la galería."
+          />
+          <div className="grid auto-rows-[140px] grid-cols-2 gap-2.5 sm:auto-rows-[180px] sm:gap-3 md:grid-cols-4 md:auto-rows-[170px]">
+            {HOME_PATIENT_PREVIEW.map((photo, i) => {
+              const featured = i === 0
+              const isLast = i === HOME_PATIENT_PREVIEW.length - 1
+              return (
+                <AnimatedSection
+                  key={photo.src}
+                  delay={i * 0.04}
+                  className={
+                    featured
+                      ? 'col-span-2 row-span-2 h-full overflow-hidden rounded-2xl sm:rounded-3xl'
+                      : 'h-full overflow-hidden rounded-2xl sm:rounded-3xl'
+                  }
+                >
+                  {isLast ? (
+                    <Link
+                      to="/galeria"
+                      className="relative block h-full focus-ring"
+                    >
+                      <img
+                        src={photo.src}
+                        alt={photo.alt}
+                        className="h-full w-full object-cover"
+                        loading="lazy"
+                      />
+                      <span className="absolute inset-0 flex flex-col items-center justify-center bg-ink/55 px-3 text-center text-white">
+                        <span className="font-display text-lg font-semibold sm:text-xl">
+                          Ver galería
+                        </span>
+                        <span className="mt-1 inline-flex items-center gap-1 text-sm text-white/85">
+                          Pacientes e instalaciones
+                          <ArrowRight className="h-4 w-4" />
+                        </span>
+                      </span>
+                    </Link>
+                  ) : (
+                    <img
+                      src={photo.src}
+                      alt={photo.alt}
+                      className="h-full w-full object-cover"
+                      loading="lazy"
+                    />
+                  )}
+                </AnimatedSection>
+              )
+            })}
+          </div>
+        </div>
+      </section>
+
       <section className="section-pad bg-brand-900 text-white">
         <div className="container-page">
           <SectionHeading
@@ -257,24 +318,13 @@ export function Home() {
           />
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-3 sm:gap-5">
             {team.map((member, i) => (
-              <AnimatedSection key={member.id} delay={i * 0.06}>
-                <article className="overflow-hidden rounded-2xl border border-white/10 bg-white/5 sm:rounded-3xl">
-                  <img
-                    src={member.image}
-                    alt={member.name}
-                    className="mx-auto aspect-square w-full max-w-[180px] object-contain p-6"
-                    loading="lazy"
-                  />
-                  <div className="p-3 text-center sm:p-4">
-                    <h3 className="font-display text-sm font-semibold sm:text-lg">
-                      {member.name}
-                    </h3>
-                    <p className="mt-1 text-xs text-brand-200 sm:text-sm">
-                      {member.specialty}
-                    </p>
-                  </div>
-                </article>
-              </AnimatedSection>
+              <TeamMemberCard
+                key={member.id}
+                member={member}
+                delay={i * 0.06}
+                variant="dark"
+                compact
+              />
             ))}
           </div>
         </div>

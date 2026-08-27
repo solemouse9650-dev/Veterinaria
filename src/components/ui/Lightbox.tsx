@@ -53,12 +53,13 @@ export function Lightbox({ open, src, alt, type = 'image', onClose }: LightboxPr
             onClick={(e) => e.stopPropagation()}
           >
             {type === 'video' ? (
-              <iframe
+              <video
                 src={src}
                 title={alt}
-                className="aspect-video h-auto w-full"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen
+                className="max-h-[85vh] w-full bg-ink"
+                controls
+                playsInline
+                preload="metadata"
               />
             ) : (
               <img src={src} alt={alt} className="max-h-[85vh] w-full object-contain" />

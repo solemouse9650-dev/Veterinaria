@@ -10,6 +10,12 @@ import type {
   TeamMember,
   Testimonial,
 } from '@/types'
+import {
+  CLINIC_PHOTOS,
+  PATIENT_PHOTOS,
+  TEAM_PHOTOS,
+  localGallery,
+} from '@/data/media'
 
 export const siteInfo: SiteInfo = {
   name: 'EcoVet',
@@ -29,7 +35,7 @@ export const siteInfo: SiteInfo = {
   mapLng: -55.7537,
   social: {
     facebook: 'https://facebook.com/ecovetclinic',
-    instagram: 'https://instagram.com/ecovetclinic',
+    instagram: 'https://instagram.com/ecovet_apostoles',
     youtube: 'https://youtube.com/@ecovetclinic',
     tiktok: 'https://tiktok.com/@ecovetclinic',
   },
@@ -89,8 +95,7 @@ export const heroContent: HeroContent = {
   title: 'Atención veterinaria integral, profesional y cercana',
   subtitle:
     'En Apóstoles, Misiones. Prevención, diagnóstico y tratamiento, acompañando a cada paciente y a su familia.',
-  image:
-    'https://images.unsplash.com/photo-1628009368231-7bb7cfcb0def?auto=format&fit=crop&w=2000&q=80',
+  image: CLINIC_PHOTOS[7].src,
   ctaPrimary: 'Reservar Turno',
   ctaSecondary: 'Contactar por WhatsApp',
   ctaTertiary: 'Ver Servicios',
@@ -120,8 +125,6 @@ const img = {
     'https://images.unsplash.com/photo-1587854692152-cbe660dbde88?auto=format&fit=crop&w=1200&q=80',
   cardio:
     'https://images.unsplash.com/photo-1601758228041-f3b2795255f1?auto=format&fit=crop&w=1200&q=80',
-  domicilio:
-    'https://images.unsplash.com/photo-1548199973-03cce0bbc87b?auto=format&fit=crop&w=1200&q=80',
   peluqueria:
     'https://images.unsplash.com/photo-1583511655857-d19b40a7a54e?auto=format&fit=crop&w=1200&q=80',
 }
@@ -149,7 +152,7 @@ export const services: Service[] = [
     name: 'Clínica general',
     slug: 'clinica-general',
     shortDescription: 'Clínica general',
-    image: img.consulta,
+    image: PATIENT_PHOTOS[3].src,
     category: 'Clínica',
     featured: true,
     order: 1,
@@ -189,7 +192,7 @@ export const services: Service[] = [
     name: 'Cirugías de tejidos blandos',
     slug: 'cirugias-de-tejidos-blandos',
     shortDescription: 'Cirugías de tejidos blandos',
-    image: img.cirugia,
+    image: CLINIC_PHOTOS[4].src,
     category: 'Cirugía',
     featured: true,
     order: 5,
@@ -269,21 +272,10 @@ export const services: Service[] = [
     name: 'Alimentos balanceados',
     slug: 'alimentos-balanceados',
     shortDescription: 'Alimentos balanceados',
-    image: img.alimento,
+    image: CLINIC_PHOTOS[7].src,
     category: 'Farmacia y alimentos',
     featured: false,
     order: 13,
-  }),
-  svc({
-    id: 'svc-domicilios',
-    name: 'Domicilios',
-    slug: 'domicilios',
-    shortDescription: 'Domicilios también',
-    description: 'Domicilios también',
-    image: img.domicilio,
-    category: 'Servicios',
-    featured: true,
-    order: 14,
   }),
   svc({
     id: 'svc-estetica-proximamente',
@@ -294,7 +286,7 @@ export const services: Service[] = [
     image: img.peluqueria,
     category: 'Próximamente',
     featured: false,
-    order: 15,
+    order: 14,
   }),
 ]
 
@@ -303,7 +295,7 @@ export const specialties: Specialty[] = [
     id: 'sp-clinica',
     name: 'Clínica general',
     description: 'Clínica general',
-    image: img.consulta,
+    image: PATIENT_PHOTOS[3].src,
     features: ['Clínica general', 'Vacunaciones', 'Análisis clínicos'],
   },
   {
@@ -329,7 +321,7 @@ export const specialties: Specialty[] = [
     id: 'sp-cirugia',
     name: 'Cirugías de tejidos blandos',
     description: 'Cirugías de tejidos blandos',
-    image: img.cirugia,
+    image: CLINIC_PHOTOS[4].src,
     features: ['Cirugías de tejidos blandos'],
   },
   {
@@ -344,22 +336,28 @@ export const specialties: Specialty[] = [
 export const team: TeamMember[] = [
   {
     id: 'team-1',
-    name: 'Claudia Andrea Koziuk',
+    name: 'Dra. Claudia Andrea Koziuk',
     specialty: 'Médica veterinaria, MP 633',
     description: 'Médica veterinaria, MP 633',
     experience: '',
-    image: '/logo.png',
+    image: TEAM_PHOTOS.claudia,
     schedule: '',
     active: true,
     order: 1,
+    areas: [
+      'Medicina integrativa',
+      'Ecografías',
+      'Radiografías',
+      'Cirugía de tejidos blandos',
+    ],
   },
   {
     id: 'team-2',
-    name: 'Martin Zuchino',
+    name: 'Dr. Martin Zuchino',
     specialty: 'Cardiología',
     description: 'Cardiología',
     experience: '',
-    image: '/logo.png',
+    image: TEAM_PHOTOS.martin,
     schedule: '',
     active: true,
     order: 2,
@@ -370,69 +368,14 @@ export const team: TeamMember[] = [
     specialty: 'Administración y estilista canino',
     description: 'Administración y estilista canino',
     experience: '',
-    image: '/logo.png',
+    image: TEAM_PHOTOS.alejandro,
     schedule: '',
     active: true,
     order: 3,
   },
 ]
 
-export const gallery: GalleryItem[] = [
-  {
-    id: 'gal-1',
-    title: 'EcoVet Clínica Veterinaria',
-    image:
-      'https://images.unsplash.com/photo-1516734212186-a967f81ad0d7?auto=format&fit=crop&w=1400&q=80',
-    type: 'image',
-    category: 'Instalaciones',
-    order: 1,
-  },
-  {
-    id: 'gal-2',
-    title: 'Atención clínica',
-    image:
-      'https://images.unsplash.com/photo-1576201832337-cebc1a8c8d0d?auto=format&fit=crop&w=1400&q=80',
-    type: 'image',
-    category: 'Instalaciones',
-    order: 2,
-  },
-  {
-    id: 'gal-3',
-    title: 'Cuidado de pacientes',
-    image:
-      'https://images.unsplash.com/photo-1583511655857-d19b40a7a54e?auto=format&fit=crop&w=1400&q=80',
-    type: 'image',
-    category: 'Pacientes',
-    order: 3,
-  },
-  {
-    id: 'gal-4',
-    title: 'Compañeros de cuatro patas',
-    image:
-      'https://images.unsplash.com/photo-1543466835-00a7907e9de1?auto=format&fit=crop&w=1400&q=80',
-    type: 'image',
-    category: 'Pacientes',
-    order: 4,
-  },
-  {
-    id: 'gal-5',
-    title: 'Bienestar animal',
-    image:
-      'https://images.unsplash.com/photo-1450778869180-41d0601e046e?auto=format&fit=crop&w=1400&q=80',
-    type: 'image',
-    category: 'Pacientes',
-    order: 5,
-  },
-  {
-    id: 'gal-6',
-    title: 'Espacio EcoVet',
-    image:
-      'https://images.unsplash.com/photo-1601758228041-f3b2795255f1?auto=format&fit=crop&w=1400&q=80',
-    type: 'image',
-    category: 'Instalaciones',
-    order: 6,
-  },
-]
+export const gallery: GalleryItem[] = localGallery
 
 export const testimonials: Testimonial[] = []
 
@@ -465,13 +408,6 @@ export const faqs: FAQ[] = [
     question: '¿Dónde están?',
     answer: 'Suipacha 250, Apóstoles, Misiones.',
     order: 4,
-    active: true,
-  },
-  {
-    id: 'faq-5',
-    question: '¿Realizan domicilios?',
-    answer: 'Sí, domicilios también.',
-    order: 5,
     active: true,
   },
 ]

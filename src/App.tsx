@@ -27,6 +27,7 @@ import { HoursAdmin } from '@/pages/admin/HoursAdmin'
 import { HeroAdmin } from '@/pages/admin/HeroAdmin'
 import { TestimonialsAdmin } from '@/pages/admin/TestimonialsAdmin'
 import { SiteAdmin } from '@/pages/admin/SiteAdmin'
+import { SecurityAdmin } from '@/pages/admin/SecurityAdmin'
 
 export default function App() {
   return (
@@ -62,6 +63,7 @@ export default function App() {
           <Route path="hero" element={<HeroAdmin />} />
           <Route path="testimonios" element={<TestimonialsAdmin />} />
           <Route path="sitio" element={<SiteAdmin />} />
+          <Route path="seguridad" element={<SecurityAdmin />} />
           <Route path="*" element={<Navigate to="/admin" replace />} />
         </Route>
       </Routes>

@@ -1,6 +1,9 @@
 import { SEO } from '@/components/seo/SEO'
 import { AnimatedSection } from '@/components/ui/AnimatedSection'
 import { SectionHeading } from '@/components/ui/SectionHeading'
+import { ClinicShowcase } from '@/components/media/ClinicShowcase'
+import { TeamMemberCard } from '@/components/team/TeamMemberCard'
+import { CLINIC_PHOTOS } from '@/data/media'
 import { useSite } from '@/contexts/SiteContext'
 
 export function About() {
@@ -16,9 +19,9 @@ export function About() {
       <section className="relative overflow-hidden page-top">
         <div className="absolute inset-0">
           <img
-            src="https://images.unsplash.com/photo-1601758228041-f3b2795255f1?auto=format&fit=crop&w=1800&q=80"
-            alt="Instalaciones EcoVet"
-            className="h-full w-full object-cover"
+            src={CLINIC_PHOTOS[1].src}
+            alt={CLINIC_PHOTOS[1].alt}
+            className="h-full w-full object-cover object-center"
           />
           <div className="absolute inset-0 bg-ink/70" />
         </div>
@@ -48,14 +51,16 @@ export function About() {
           <AnimatedSection delay={0.1}>
             <div className="grid gap-4 sm:grid-cols-2">
               <img
-                src="https://images.unsplash.com/photo-1576201832337-cebc1a8c8d0d?auto=format&fit=crop&w=900&q=80"
-                alt="Consulta veterinaria"
+                src={CLINIC_PHOTOS[7].src}
+                alt={CLINIC_PHOTOS[7].alt}
                 className="h-56 w-full rounded-3xl object-cover sm:h-72"
+                loading="lazy"
               />
               <img
-                src="https://images.unsplash.com/photo-1548199973-03cce0bbc87b?auto=format&fit=crop&w=900&q=80"
-                alt="Paciente canino"
+                src={CLINIC_PHOTOS[4].src}
+                alt={CLINIC_PHOTOS[4].alt}
                 className="h-56 w-full rounded-3xl object-cover sm:mt-10 sm:h-72"
+                loading="lazy"
               />
             </div>
           </AnimatedSection>
@@ -63,6 +68,17 @@ export function About() {
       </section>
 
       <section className="section-pad bg-white">
+        <div className="container-page">
+          <SectionHeading
+            eyebrow="Nuestra veterinaria"
+            title="Un espacio pensado para cuidar"
+            description="Instalaciones limpias, equipadas y cercanas, en Suipacha 250, Apóstoles."
+          />
+          <ClinicShowcase />
+        </div>
+      </section>
+
+      <section className="section-pad">
         <div className="container-page">
           <SectionHeading
             eyebrow="Nuestros valores"
@@ -85,7 +101,7 @@ export function About() {
         </div>
       </section>
 
-      <section className="section-pad">
+      <section className="section-pad bg-white">
         <div className="container-page">
           <SectionHeading
             eyebrow="Equipo"
@@ -94,19 +110,7 @@ export function About() {
           />
           <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {team.map((member, i) => (
-              <AnimatedSection key={member.id} delay={i * 0.05}>
-                <article className="overflow-hidden rounded-3xl border border-line bg-white">
-                  <img
-                    src={member.image}
-                    alt={member.name}
-                    className="aspect-[4/5] w-full object-cover object-center"
-                  />
-                  <div className="p-4">
-                    <h3 className="font-display text-lg font-semibold">{member.name}</h3>
-                    <p className="text-sm text-brand-700">{member.specialty}</p>
-                  </div>
-                </article>
-              </AnimatedSection>
+              <TeamMemberCard key={member.id} member={member} delay={i * 0.05} />
             ))}
           </div>
         </div>

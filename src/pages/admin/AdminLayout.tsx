@@ -5,6 +5,7 @@ import {
   FileText,
   HelpCircle,
   ImageIcon,
+  KeyRound,
   LayoutDashboard,
   LogOut,
   Menu,
@@ -35,6 +36,7 @@ const links = [
   { to: '/admin/hero', label: 'Hero', icon: Sparkles },
   { to: '/admin/testimonios', label: 'Testimonios', icon: MessageSquareQuote },
   { to: '/admin/sitio', label: 'Sitio', icon: Settings },
+  { to: '/admin/seguridad', label: 'Seguridad', icon: KeyRound },
 ]
 
 export function AdminLayout() {

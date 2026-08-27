@@ -13,7 +13,7 @@ export function FAQPage() {
     <>
       <SEO
         title="Preguntas frecuentes"
-        description="Respuestas sobre turnos, horarios, domicilios y atención en EcoVet Apóstoles. No se realizan urgencias."
+        description="Respuestas sobre turnos, horarios y atención en EcoVet Apóstoles. No se realizan urgencias."
         path="/preguntas-frecuentes"
       />
       <section className="section-pad page-top">
