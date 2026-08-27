@@ -5,6 +5,8 @@ import { LoadingSpinner } from '@/components/ui/LoadingSpinner'
 import { Textarea } from '@/components/ui/Textarea'
 import { useSite } from '@/contexts/SiteContext'
 import { createDoc, fetchTeam, logActivity, removeDoc, saveDoc } from '@/services/firestore'
+import { writeErrorMessage } from '@/lib/adminWrite'
+import { AdminWriteFeedback, useAdminWrite } from '@/components/admin/AdminWriteFeedback'
 import type { TeamMember } from '@/types'
 
 const empty: Omit<TeamMember, 'id'> = {
@@ -24,6 +26,7 @@ export function TeamAdmin() {
   const [items, setItems] = useState<TeamMember[]>([])
   const [form, setForm] = useState<Omit<TeamMember, 'id'> & { id?: string }>(empty)
   const [loading, setLoading] = useState(true)
+  const { saving, error, success, run } = useAdminWrite()
 
   const load = async () => {
     setLoading(true)
@@ -39,13 +42,15 @@ export function TeamAdmin() {
   }, [])
 
   const onSave = async () => {
-    const { id, ...rest } = form
-    if (id) await saveDoc('team', id, rest)
-    else await createDoc('team', rest)
-    await logActivity('equipo', `${id ? 'Actualizado' : 'Creado'}: ${rest.name}`)
-    setForm(empty)
-    await load()
-    await refresh()
+    await run(async () => {
+      const { id, ...rest } = form
+      if (id) await saveDoc('team', id, rest)
+      else await createDoc('team', rest)
+      await logActivity('equipo', `${id ? 'Actualizado' : 'Creado'}: ${rest.name}`)
+      setForm(empty)
+      await load()
+      await refresh()
+    })
   }
 
   if (loading) {
@@ -87,7 +92,10 @@ export function TeamAdmin() {
         <div className="md:col-span-2">
           <Textarea label="Descripción" value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} />
         </div>
-        <Button onClick={() => void onSave()}>{form.id ? 'Actualizar' : 'Agregar'}</Button>
+        <AdminWriteFeedback error={error} success={success} />
+        <Button onClick={() => void onSave()} disabled={saving}>
+          {saving ? 'Guardando…' : form.id ? 'Actualizar' : 'Agregar'}
+        </Button>
       </div>
       <div className="space-y-3">
         {items.map((item) => (
@@ -106,9 +114,13 @@ export function TeamAdmin() {
               }}>Editar</Button>
               <Button size="sm" variant="danger" onClick={() => void (async () => {
                 if (!confirm('¿Eliminar?')) return
-                await removeDoc('team', item.id)
-                await load()
-                await refresh()
+                try {
+                  await removeDoc('team', item.id)
+                  await load()
+                  await refresh()
+                } catch (e) {
+                  window.alert(writeErrorMessage(e))
+                }
               })()}>Eliminar</Button>
             </div>
           </div>

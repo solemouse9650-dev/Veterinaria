@@ -7,6 +7,8 @@ import { useSite } from '@/contexts/SiteContext'
 import { slugify } from '@/lib/utils'
 import { sanitizeHtml } from '@/lib/sanitize'
 import { createDoc, fetchBlog, logActivity, removeDoc, saveDoc } from '@/services/firestore'
+import { writeErrorMessage } from '@/lib/adminWrite'
+import { AdminWriteFeedback, useAdminWrite } from '@/components/admin/AdminWriteFeedback'
 import type { BlogPost } from '@/types'
 
 const empty: Omit<BlogPost, 'id'> = {
@@ -27,6 +29,7 @@ export function BlogAdmin() {
   const [items, setItems] = useState<BlogPost[]>([])
   const [form, setForm] = useState<Omit<BlogPost, 'id'> & { id?: string }>(empty)
   const [loading, setLoading] = useState(true)
+  const { saving, error, success, run } = useAdminWrite()
 
   const load = async () => {
     setLoading(true)
@@ -42,19 +45,21 @@ export function BlogAdmin() {
   }, [])
 
   const onSave = async () => {
-    const payload = {
-      ...form,
-      slug: form.slug || slugify(form.title),
-      published: Boolean(form.published),
-      content: sanitizeHtml(form.content),
-    }
-    const { id, ...rest } = payload
-    if (id) await saveDoc('blog', id, rest)
-    else await createDoc('blog', rest)
-    await logActivity('blog', `Artículo ${id ? 'actualizado' : 'creado'}: ${rest.title}`)
-    setForm(empty)
-    await load()
-    await refresh()
+    await run(async () => {
+      const payload = {
+        ...form,
+        slug: form.slug || slugify(form.title),
+        published: Boolean(form.published),
+        content: sanitizeHtml(form.content),
+      }
+      const { id, ...rest } = payload
+      if (id) await saveDoc('blog', id, rest)
+      else await createDoc('blog', rest)
+      await logActivity('blog', `Artículo ${id ? 'actualizado' : 'creado'}: ${rest.title}`)
+      setForm(empty)
+      await load()
+      await refresh()
+    })
   }
 
   if (loading) {
@@ -95,7 +100,10 @@ export function BlogAdmin() {
             className="min-h-40"
           />
         </div>
-        <Button onClick={() => void onSave()}>{form.id ? 'Actualizar' : 'Crear artículo'}</Button>
+        <AdminWriteFeedback error={error} success={success} />
+        <Button onClick={() => void onSave()} disabled={saving}>
+          {saving ? 'Guardando…' : form.id ? 'Actualizar' : 'Crear artículo'}
+        </Button>
       </div>
       <div className="space-y-3">
         {items.map((item) => (
@@ -113,9 +121,13 @@ export function BlogAdmin() {
               }}>Editar</Button>
               <Button size="sm" variant="danger" onClick={() => void (async () => {
                 if (!confirm('¿Eliminar artículo?')) return
-                await removeDoc('blog', item.id)
-                await load()
-                await refresh()
+                try {
+                  await removeDoc('blog', item.id)
+                  await load()
+                  await refresh()
+                } catch (e) {
+                  window.alert(writeErrorMessage(e))
+                }
               })()}>Eliminar</Button>
             </div>
           </div>

@@ -1,7 +1,6 @@
 import {
   CalendarDays,
   Clock3,
-  Database,
   FileText,
   HelpCircle,
   ImageIcon,
@@ -20,9 +19,7 @@ import { useEffect, useState } from 'react'
 import { NavLink, Navigate, Outlet } from 'react-router-dom'
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner'
 import { useAuth } from '@/contexts/AuthContext'
-import { useSite } from '@/contexts/SiteContext'
 import { cn } from '@/lib/utils'
-import { seedDatabase } from '@/services/firestore'
 
 const links = [
   { to: '/admin', label: 'Dashboard', icon: LayoutDashboard, end: true },
@@ -41,9 +38,6 @@ const links = [
 
 export function AdminLayout() {
   const { user, loading, isAdmin, logout } = useAuth()
-  const { refresh } = useSite()
-  const [seeding, setSeeding] = useState(false)
-  const [seedMsg, setSeedMsg] = useState('')
   const [menuOpen, setMenuOpen] = useState(false)
 
   useEffect(() => {
@@ -63,31 +57,6 @@ export function AdminLayout() {
 
   if (!user || !isAdmin) {
     return <Navigate to="/admin/login" replace />
-  }
-
-  const handleSeed = async () => {
-    if (
-      !window.confirm(
-        'Esto reemplaza el contenido público del sitio en Firestore. ¿Querés continuar?',
-      )
-    ) {
-      return
-    }
-    setSeeding(true)
-    setSeedMsg('')
-    try {
-      await seedDatabase()
-      await refresh()
-      setSeedMsg('Contenido oficial de EcoVet cargado en Firestore.')
-    } catch (e) {
-      setSeedMsg(
-        e instanceof Error
-          ? e.message
-          : 'No se pudo sembrar. Revisá las reglas de Firebase.',
-      )
-    } finally {
-      setSeeding(false)
-    }
   }
 
   const Sidebar = (
@@ -127,16 +96,6 @@ export function AdminLayout() {
         ))}
       </nav>
       <div className="space-y-2 border-t border-white/10 p-4">
-        <button
-          type="button"
-          onClick={() => void handleSeed()}
-          disabled={seeding}
-          className="flex w-full items-center gap-2 rounded-xl bg-white/10 px-3 py-2.5 text-sm hover:bg-white/15 disabled:opacity-60"
-        >
-          <Database className="h-4 w-4" />
-            {seeding ? 'Cargando…' : 'Cargar contenido oficial'}
-        </button>
-        {seedMsg && <p className="text-xs text-brand-200">{seedMsg}</p>}
         <button
           type="button"
           onClick={() => void logout()}

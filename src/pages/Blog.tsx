@@ -3,7 +3,7 @@ import { SEO } from '@/components/seo/SEO'
 import { AnimatedSection } from '@/components/ui/AnimatedSection'
 import { SectionHeading } from '@/components/ui/SectionHeading'
 import { useSite } from '@/contexts/SiteContext'
-import { formatDate } from '@/lib/utils'
+import { formatDate, blogCoverAlt } from '@/lib/utils'
 
 export function Blog() {
   const { blog } = useSite()
@@ -31,7 +31,7 @@ export function Blog() {
                 >
                   <img
                     src={post.image}
-                    alt={post.title}
+                    alt={blogCoverAlt(post.title)}
                     className="aspect-[16/11] w-full object-cover transition duration-500 group-hover:scale-105"
                     loading="lazy"
                   />

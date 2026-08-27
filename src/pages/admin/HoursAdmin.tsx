@@ -6,13 +6,14 @@ import { Select } from '@/components/ui/Select'
 import { Textarea } from '@/components/ui/Textarea'
 import { useSite } from '@/contexts/SiteContext'
 import { fetchHours, logActivity, saveDoc } from '@/services/firestore'
+import { AdminWriteFeedback, useAdminWrite } from '@/components/admin/AdminWriteFeedback'
 import type { HoursConfig, OpenStatusOverride } from '@/types'
 
 export function HoursAdmin() {
   const { refresh } = useSite()
   const [hours, setHours] = useState<HoursConfig | null>(null)
   const [loading, setLoading] = useState(true)
-  const [saving, setSaving] = useState(false)
+  const { saving, error, success, run } = useAdminWrite()
 
   useEffect(() => {
     void (async () => {
@@ -23,8 +24,7 @@ export function HoursAdmin() {
 
   const onSave = async () => {
     if (!hours) return
-    setSaving(true)
-    try {
+    await run(async () => {
       const rest = {
         regular: hours.regular,
         holidays: hours.holidays,
@@ -36,9 +36,7 @@ export function HoursAdmin() {
       await saveDoc('hours', 'main', rest)
       await logActivity('horarios', 'Horarios actualizados')
       await refresh()
-    } finally {
-      setSaving(false)
-    }
+    })
   }
 
   if (loading || !hours) {
@@ -173,6 +171,7 @@ export function HoursAdmin() {
             }
           />
         </div>
+        <AdminWriteFeedback error={error} success={success} />
         <Button onClick={() => void onSave()} disabled={saving}>
           {saving ? 'Guardando…' : 'Guardar horarios'}
         </Button>

@@ -5,6 +5,8 @@ import { LoadingSpinner } from '@/components/ui/LoadingSpinner'
 import { Textarea } from '@/components/ui/Textarea'
 import { useSite } from '@/contexts/SiteContext'
 import { slugify } from '@/lib/utils'
+import { writeErrorMessage } from '@/lib/adminWrite'
+import { AdminWriteFeedback, useAdminWrite } from '@/components/admin/AdminWriteFeedback'
 import {
   createDoc,
   fetchServices,
@@ -33,7 +35,7 @@ export function ServicesAdmin() {
   const [items, setItems] = useState<Service[]>([])
   const [form, setForm] = useState<Omit<Service, 'id'> & { id?: string }>(empty)
   const [loading, setLoading] = useState(true)
-  const [saving, setSaving] = useState(false)
+  const { saving, error, success, run } = useAdminWrite()
 
   const load = async () => {
     setLoading(true)
@@ -49,8 +51,7 @@ export function ServicesAdmin() {
   }, [])
 
   const onSave = async () => {
-    setSaving(true)
-    try {
+    await run(async () => {
       const payload = {
         ...form,
         slug: form.slug || slugify(form.name),
@@ -69,9 +70,7 @@ export function ServicesAdmin() {
       setForm(empty)
       await load()
       await refresh()
-    } finally {
-      setSaving(false)
-    }
+    })
   }
 
   const onEdit = (item: Service) => {
@@ -81,16 +80,24 @@ export function ServicesAdmin() {
 
   const onDelete = async (id: string, name: string) => {
     if (!confirm(`¿Eliminar ${name}?`)) return
-    await removeDoc('services', id)
-    await logActivity('servicios', `Servicio eliminado: ${name}`)
-    await load()
-    await refresh()
+    try {
+      await removeDoc('services', id)
+      await logActivity('servicios', `Servicio eliminado: ${name}`)
+      await load()
+      await refresh()
+    } catch (e) {
+      window.alert(writeErrorMessage(e))
+    }
   }
 
   const toggle = async (item: Service, field: 'active' | 'featured') => {
-    await saveDoc('services', item.id, { [field]: !item[field] })
-    await load()
-    await refresh()
+    try {
+      await saveDoc('services', item.id, { [field]: !item[field] })
+      await load()
+      await refresh()
+    } catch (e) {
+      window.alert(writeErrorMessage(e))
+    }
   }
 
   if (loading) {
@@ -120,7 +127,9 @@ export function ServicesAdmin() {
         <div className="md:col-span-2">
           <Textarea label="Descripción" value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} />
         </div>
-        <div className="flex gap-3 md:col-span-2">
+        <div className="flex flex-col gap-3 md:col-span-2">
+          <AdminWriteFeedback error={error} success={success} />
+          <div className="flex gap-3">
           <Button onClick={() => void onSave()} disabled={saving}>
             {saving ? 'Guardando…' : form.id ? 'Actualizar' : 'Agregar'}
           </Button>
@@ -129,6 +138,7 @@ export function ServicesAdmin() {
               Cancelar edición
             </Button>
           )}
+          </div>
         </div>
       </div>
 

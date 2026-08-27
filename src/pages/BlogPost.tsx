@@ -2,7 +2,7 @@ import { Link, useParams } from 'react-router-dom'
 import { SEO } from '@/components/seo/SEO'
 import { Button } from '@/components/ui/Button'
 import { useSite } from '@/contexts/SiteContext'
-import { formatDate } from '@/lib/utils'
+import { formatDate, blogCoverAlt } from '@/lib/utils'
 import { sanitizeHtml } from '@/lib/sanitize'
 
 export function BlogPost() {
@@ -41,7 +41,7 @@ export function BlogPost() {
           <p className="mt-3 text-muted">Por {post.author}</p>
           <img
             src={post.image}
-            alt={post.title}
+            alt={blogCoverAlt(post.title)}
             className="mt-8 aspect-[16/9] w-full rounded-[2rem] object-cover"
           />
           <div

@@ -11,6 +11,8 @@ import {
   removeDoc,
   saveDoc,
 } from '@/services/firestore'
+import { writeErrorMessage } from '@/lib/adminWrite'
+import { AdminWriteFeedback, useAdminWrite } from '@/components/admin/AdminWriteFeedback'
 import type { Testimonial } from '@/types'
 
 export function TestimonialsAdmin() {
@@ -27,6 +29,7 @@ export function TestimonialsAdmin() {
     active: true,
     order: 1,
   })
+  const { saving, error, success, run } = useAdminWrite()
 
   const load = async () => {
     setLoading(true)
@@ -42,30 +45,32 @@ export function TestimonialsAdmin() {
   }, [])
 
   const onSave = async () => {
-    const payload = {
-      name: form.name,
-      petName: form.petName,
-      rating: Number(form.rating),
-      comment: form.comment,
-      image: form.image,
-      active: form.active,
-      order: Number(form.order),
-    }
-    if (form.id) await saveDoc('testimonials', form.id, payload)
-    else await createDoc('testimonials', payload)
-    await logActivity('testimonios', 'Testimonio guardado')
-    setForm({
-      id: '',
-      name: '',
-      petName: '',
-      rating: 5,
-      comment: '',
-      image: '',
-      active: true,
-      order: 1,
+    await run(async () => {
+      const payload = {
+        name: form.name,
+        petName: form.petName,
+        rating: Number(form.rating),
+        comment: form.comment,
+        image: form.image,
+        active: form.active,
+        order: Number(form.order),
+      }
+      if (form.id) await saveDoc('testimonials', form.id, payload)
+      else await createDoc('testimonials', payload)
+      await logActivity('testimonios', 'Testimonio guardado')
+      setForm({
+        id: '',
+        name: '',
+        petName: '',
+        rating: 5,
+        comment: '',
+        image: '',
+        active: true,
+        order: 1,
+      })
+      await load()
+      await refresh()
     })
-    await load()
-    await refresh()
   }
 
   if (loading) {
@@ -90,7 +95,10 @@ export function TestimonialsAdmin() {
         <div className="md:col-span-2">
           <Textarea label="Comentario" value={form.comment} onChange={(e) => setForm({ ...form, comment: e.target.value })} />
         </div>
-        <Button onClick={() => void onSave()}>{form.id ? 'Actualizar' : 'Agregar'}</Button>
+        <AdminWriteFeedback error={error} success={success} />
+        <Button onClick={() => void onSave()} disabled={saving}>
+          {saving ? 'Guardando…' : form.id ? 'Actualizar' : 'Agregar'}
+        </Button>
       </div>
       <div className="space-y-3">
         {items.map((item) => (
@@ -103,9 +111,13 @@ export function TestimonialsAdmin() {
               <Button size="sm" variant="outline" onClick={() => setForm(item)}>Editar</Button>
               <Button size="sm" variant="danger" onClick={() => void (async () => {
                 if (!confirm('¿Eliminar?')) return
-                await removeDoc('testimonials', item.id)
-                await load()
-                await refresh()
+                try {
+                  await removeDoc('testimonials', item.id)
+                  await load()
+                  await refresh()
+                } catch (e) {
+                  window.alert(writeErrorMessage(e))
+                }
               })()}>Eliminar</Button>
             </div>
           </div>

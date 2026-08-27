@@ -407,8 +407,7 @@ export const blogPosts: BlogPost[] = [
         <li>Visitas de control cada 3–4 semanas</li>
       </ul>
     `,
-    image:
-      'https://images.unsplash.com/photo-1587300003388-59208cc962cb?auto=format&fit=crop&w=1400&q=80',
+    image: PATIENT_PHOTOS[3].src,
     category: 'Cachorros',
     author: 'Equipo EcoVet',
     published: true,
@@ -426,8 +425,7 @@ export const blogPosts: BlogPost[] = [
       <p>El calendario no es igual para todos. Depende de la especie, la edad y la exposición a otros animales.</p>
       <p>Las vacunas esenciales protegen contra enfermedades graves. Las opcionales se eligen según riesgo.</p>
     `,
-    image:
-      'https://images.unsplash.com/photo-1612531386530-97286d97c2d2?auto=format&fit=crop&w=1400&q=80',
+    image: PATIENT_PHOTOS[0].src,
     category: 'Prevención',
     author: 'Equipo EcoVet',
     published: true,
@@ -445,8 +443,7 @@ export const blogPosts: BlogPost[] = [
       <p>Necesitan proteínas de alta calidad y una hidratación adecuada. El alimento húmedo suele ayudar en pacientes con tendencia urinaria.</p>
       <p>Evitá cambios bruscos de dieta y consultá antes de usar suplementos caseros.</p>
     `,
-    image:
-      'https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?auto=format&fit=crop&w=1400&q=80',
+    image: PATIENT_PHOTOS[2].src,
     category: 'Nutrición',
     author: 'Equipo EcoVet',
     published: true,
@@ -463,8 +460,7 @@ export const blogPosts: BlogPost[] = [
       <h2>La prevención es continua</h2>
       <p>Los parásitos no se toman vacaciones. Un plan anual reduce riesgos de anemia, dermatitis y enfermedades transmitidas.</p>
     `,
-    image:
-      'https://images.unsplash.com/photo-1583337130417-3346a1be7dee?auto=format&fit=crop&w=1400&q=80',
+    image: PATIENT_PHOTOS[5].src,
     category: 'Prevención',
     author: 'Equipo EcoVet',
     published: true,
@@ -481,8 +477,7 @@ export const blogPosts: BlogPost[] = [
       <h2>Cuidar también es prevenir</h2>
       <p>Identificación, esterilización responsable, paseos con correa y chequeos anuales son pilares de una convivencia sana.</p>
     `,
-    image:
-      'https://images.unsplash.com/photo-1530281700549-e82e7bf110d6?auto=format&fit=crop&w=1400&q=80',
+    image: TEAM_PHOTOS.claudia,
     category: 'Consejos',
     author: 'Equipo EcoVet',
     published: true,

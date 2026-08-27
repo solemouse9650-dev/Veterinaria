@@ -5,13 +5,14 @@ import { LoadingSpinner } from '@/components/ui/LoadingSpinner'
 import { Textarea } from '@/components/ui/Textarea'
 import { useSite } from '@/contexts/SiteContext'
 import { fetchSiteInfo, logActivity, saveDoc } from '@/services/firestore'
+import { AdminWriteFeedback, useAdminWrite } from '@/components/admin/AdminWriteFeedback'
 import type { SiteInfo } from '@/types'
 
 export function SiteAdmin() {
   const { refresh } = useSite()
   const [site, setSite] = useState<SiteInfo | null>(null)
   const [loading, setLoading] = useState(true)
-  const [saving, setSaving] = useState(false)
+  const { saving, error, success, run } = useAdminWrite()
 
   useEffect(() => {
     void (async () => {
@@ -22,14 +23,11 @@ export function SiteAdmin() {
 
   const onSave = async () => {
     if (!site) return
-    setSaving(true)
-    try {
+    await run(async () => {
       await saveDoc('site', 'info', site)
       await logActivity('sitio', 'Información general actualizada')
       await refresh()
-    } finally {
-      setSaving(false)
-    }
+    })
   }
 
   if (loading || !site) {
@@ -69,6 +67,7 @@ export function SiteAdmin() {
         <div className="md:col-span-2">
           <Textarea label="Compromiso" value={site.commitment} onChange={(e) => setSite({ ...site, commitment: e.target.value })} />
         </div>
+        <AdminWriteFeedback error={error} success={success} />
         <Button onClick={() => void onSave()} disabled={saving}>
           {saving ? 'Guardando…' : 'Guardar cambios'}
         </Button>

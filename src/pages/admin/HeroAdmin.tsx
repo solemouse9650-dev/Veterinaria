@@ -5,13 +5,14 @@ import { LoadingSpinner } from '@/components/ui/LoadingSpinner'
 import { Textarea } from '@/components/ui/Textarea'
 import { useSite } from '@/contexts/SiteContext'
 import { fetchHero, logActivity, saveDoc } from '@/services/firestore'
+import { AdminWriteFeedback, useAdminWrite } from '@/components/admin/AdminWriteFeedback'
 import type { HeroContent } from '@/types'
 
 export function HeroAdmin() {
   const { refresh } = useSite()
   const [hero, setHero] = useState<HeroContent | null>(null)
   const [loading, setLoading] = useState(true)
-  const [saving, setSaving] = useState(false)
+  const { saving, error, success, run } = useAdminWrite()
 
   useEffect(() => {
     void (async () => {
@@ -22,14 +23,11 @@ export function HeroAdmin() {
 
   const onSave = async () => {
     if (!hero) return
-    setSaving(true)
-    try {
+    await run(async () => {
       await saveDoc('site', 'hero', hero)
       await logActivity('hero', 'Hero actualizado')
       await refresh()
-    } finally {
-      setSaving(false)
-    }
+    })
   }
 
   if (loading || !hero) {
@@ -77,6 +75,7 @@ export function HeroAdmin() {
             />
           </div>
         ))}
+        <AdminWriteFeedback error={error} success={success} />
         <Button onClick={() => void onSave()} disabled={saving}>
           {saving ? 'Guardando…' : 'Guardar Hero'}
         </Button>

@@ -5,6 +5,8 @@ import { LoadingSpinner } from '@/components/ui/LoadingSpinner'
 import { Textarea } from '@/components/ui/Textarea'
 import { useSite } from '@/contexts/SiteContext'
 import { createDoc, fetchFaqs, logActivity, removeDoc, saveDoc } from '@/services/firestore'
+import { writeErrorMessage } from '@/lib/adminWrite'
+import { AdminWriteFeedback, useAdminWrite } from '@/components/admin/AdminWriteFeedback'
 import type { FAQ } from '@/types'
 
 export function FAQAdmin() {
@@ -12,6 +14,7 @@ export function FAQAdmin() {
   const [items, setItems] = useState<FAQ[]>([])
   const [loading, setLoading] = useState(true)
   const [form, setForm] = useState({ id: '', question: '', answer: '', order: 1, active: true })
+  const { saving, error, success, run } = useAdminWrite()
 
   const load = async () => {
     setLoading(true)
@@ -27,18 +30,20 @@ export function FAQAdmin() {
   }, [])
 
   const onSave = async () => {
-    const payload = {
-      question: form.question,
-      answer: form.answer,
-      order: Number(form.order),
-      active: form.active,
-    }
-    if (form.id) await saveDoc('faqs', form.id, payload)
-    else await createDoc('faqs', payload)
-    await logActivity('faqs', 'FAQ guardada')
-    setForm({ id: '', question: '', answer: '', order: 1, active: true })
-    await load()
-    await refresh()
+    await run(async () => {
+      const payload = {
+        question: form.question,
+        answer: form.answer,
+        order: Number(form.order),
+        active: form.active,
+      }
+      if (form.id) await saveDoc('faqs', form.id, payload)
+      else await createDoc('faqs', payload)
+      await logActivity('faqs', 'FAQ guardada')
+      setForm({ id: '', question: '', answer: '', order: 1, active: true })
+      await load()
+      await refresh()
+    })
   }
 
   if (loading) {
@@ -59,7 +64,10 @@ export function FAQAdmin() {
         <Input label="Pregunta" value={form.question} onChange={(e) => setForm({ ...form, question: e.target.value })} />
         <Textarea label="Respuesta" value={form.answer} onChange={(e) => setForm({ ...form, answer: e.target.value })} />
         <Input label="Orden" type="number" value={form.order} onChange={(e) => setForm({ ...form, order: Number(e.target.value) })} />
-        <Button onClick={() => void onSave()}>{form.id ? 'Actualizar' : 'Agregar'}</Button>
+        <AdminWriteFeedback error={error} success={success} />
+        <Button onClick={() => void onSave()} disabled={saving}>
+          {saving ? 'Guardando…' : form.id ? 'Actualizar' : 'Agregar'}
+        </Button>
       </div>
       <div className="space-y-3">
         {items.map((item) => (
@@ -70,9 +78,13 @@ export function FAQAdmin() {
               <Button size="sm" variant="outline" onClick={() => setForm(item)}>Editar</Button>
               <Button size="sm" variant="danger" onClick={() => void (async () => {
                 if (!confirm('¿Eliminar?')) return
-                await removeDoc('faqs', item.id)
-                await load()
-                await refresh()
+                try {
+                  await removeDoc('faqs', item.id)
+                  await load()
+                  await refresh()
+                } catch (e) {
+                  window.alert(writeErrorMessage(e))
+                }
               })()}>Eliminar</Button>
             </div>
           </div>

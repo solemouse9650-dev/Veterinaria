@@ -124,6 +124,22 @@ function withLocalGallery(items: GalleryItem[]): GalleryItem[] {
   })
 }
 
+function withLocalBlogImages(items: BlogPost[]): BlogPost[] {
+  return items.map((post) => {
+    const seed = seedBlog.find(
+      (item) => item.id === post.id || item.slug === post.slug,
+    )
+    if (
+      seed &&
+      isStockMediaUrl(post.image) &&
+      !isStockMediaUrl(seed.image)
+    ) {
+      return { ...post, image: seed.image }
+    }
+    return post
+  })
+}
+
 function withLocalHero(hero: HeroContent): HeroContent {
   if (isStockMediaUrl(hero.image)) {
     return { ...hero, image: seedHero.image }
@@ -192,40 +208,21 @@ export function SiteProvider({ children }: { children: ReactNode }) {
         )
       }
 
-      // Si Firestore aún tiene el contenido demo anterior, usar el seed oficial.
-      const legacyContent =
-        !siteData.address?.includes('Suipacha') ||
-        servicesData.some(
-          (s) => s.slug === 'emergencias' || s.slug === 'consulta-clinica',
-        )
-
-      if (legacyContent) {
-        setSite(seedSite)
-        setHero(seedHero)
-        setServices(seedServices.filter((s) => s.active !== false))
-        setTeam(seedTeam.filter((t) => t.active !== false))
-        setGallery(seedGallery)
-        setBlog(seedBlog.filter((b) => b.published !== false))
-        setFaqs(seedFaqs.filter((f) => f.active !== false))
-        setTestimonials(seedTestimonials.filter((t) => t.active !== false))
-        setHours(seedHours)
-      } else {
-        setSite(withOfficialSocial(siteData))
-        setHero(withLocalHero(heroData))
-        setServices(
-          withLocalServiceImages(
-            servicesData.filter(
-              (s) => s.active !== false && !isDomicilio(s),
-            ),
-          ),
-        )
-        setTeam(withLocalTeamPhotos(teamData.filter((t) => t.active !== false)))
-        setGallery(withLocalGallery(galleryData))
-        setBlog(blogData.filter((b) => b.published !== false))
-        setFaqs(faqsData.filter((f) => f.active !== false))
-        setTestimonials(testimonialsData.filter((t) => t.active !== false))
-        setHours(normalizeHours(hoursData))
-      }
+      setSite(withOfficialSocial(siteData))
+      setHero(withLocalHero(heroData))
+      setServices(
+        withLocalServiceImages(
+          servicesData.filter((s) => s.active !== false && !isDomicilio(s)),
+        ),
+      )
+      setTeam(withLocalTeamPhotos(teamData.filter((t) => t.active !== false)))
+      setGallery(withLocalGallery(galleryData))
+      setBlog(
+        withLocalBlogImages(blogData.filter((b) => b.published !== false)),
+      )
+      setFaqs(faqsData.filter((f) => f.active !== false))
+      setTestimonials(testimonialsData.filter((t) => t.active !== false))
+      setHours(normalizeHours(hoursData))
     } catch {
       // Keep seed fallbacks when Firestore is unreachable.
     } finally {

@@ -191,18 +191,37 @@ export async function deleteReservation(id: string) {
   await deleteDoc(doc(requireDb(), 'reservations', id))
 }
 
+function omitUndefined(value: unknown): unknown {
+  if (Array.isArray(value)) return value.map(omitUndefined)
+  if (value && typeof value === 'object') {
+    const out: Record<string, unknown> = {}
+    for (const [key, nested] of Object.entries(value as Record<string, unknown>)) {
+      if (nested !== undefined) out[key] = omitUndefined(nested)
+    }
+    return out
+  }
+  return value
+}
+
 export async function saveDoc(
   collectionName: string,
   id: string,
   data: DocumentData,
 ) {
   assertWritableCollection(collectionName)
-  await setDoc(doc(requireDb(), collectionName, id), data, { merge: true })
+  await setDoc(
+    doc(requireDb(), collectionName, id),
+    omitUndefined(data) as DocumentData,
+    { merge: true },
+  )
 }
 
 export async function createDoc(collectionName: string, data: DocumentData) {
   assertWritableCollection(collectionName)
-  const ref = await addDoc(collection(requireDb(), collectionName), data)
+  const ref = await addDoc(
+    collection(requireDb(), collectionName),
+    omitUndefined(data) as DocumentData,
+  )
   return ref.id
 }
 
@@ -229,58 +248,4 @@ export async function fetchActivity(): Promise<ActivityLog[]> {
         new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
     )
     .slice(0, 12)
-}
-
-async function clearCollection(name: string) {
-  const snap = await getDocs(collection(requireDb(), name))
-  await Promise.all(snap.docs.map((d) => deleteDoc(d.ref)))
-}
-
-export async function seedDatabase() {
-  await Promise.all([
-    clearCollection('services'),
-    clearCollection('team'),
-    clearCollection('gallery'),
-    clearCollection('blog'),
-    clearCollection('faqs'),
-    clearCollection('testimonials'),
-  ])
-
-  await setDoc(doc(requireDb(), 'site', 'info'), seedSite)
-  await setDoc(doc(requireDb(), 'site', 'hero'), seedHero)
-  await setDoc(doc(requireDb(), 'hours', 'main'), {
-    regular: seedHours.regular,
-    holidays: seedHours.holidays,
-    vacations: seedHours.vacations,
-    emergencyNote: seedHours.emergencyNote,
-    statusOverride: seedHours.statusOverride,
-    statusNote: seedHours.statusNote,
-  })
-
-  for (const item of seedServices) {
-    const { id, ...rest } = item
-    await setDoc(doc(requireDb(), 'services', id), rest)
-  }
-  for (const item of seedTeam) {
-    const { id, ...rest } = item
-    await setDoc(doc(requireDb(), 'team', id), rest)
-  }
-  for (const item of seedGallery) {
-    const { id, ...rest } = item
-    await setDoc(doc(requireDb(), 'gallery', id), rest)
-  }
-  for (const item of seedBlog) {
-    const { id, ...rest } = item
-    await setDoc(doc(requireDb(), 'blog', id), rest)
-  }
-  for (const item of seedFaqs) {
-    const { id, ...rest } = item
-    await setDoc(doc(requireDb(), 'faqs', id), rest)
-  }
-  for (const item of seedTestimonials) {
-    const { id, ...rest } = item
-    await setDoc(doc(requireDb(), 'testimonials', id), rest)
-  }
-
-  await logActivity('seed', 'Contenido oficial de EcoVet cargado en Firestore')
 }

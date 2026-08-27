@@ -13,6 +13,8 @@ import {
   removeDoc,
   saveDoc,
 } from '@/services/firestore'
+import { writeErrorMessage } from '@/lib/adminWrite'
+import { AdminWriteFeedback, useAdminWrite } from '@/components/admin/AdminWriteFeedback'
 import type { GalleryItem } from '@/types'
 
 export function GalleryAdmin() {
@@ -28,6 +30,7 @@ export function GalleryAdmin() {
     category: 'Pacientes',
     order: 1,
   })
+  const { saving, error, success, run } = useAdminWrite()
 
   const load = async () => {
     setLoading(true)
@@ -73,32 +76,36 @@ export function GalleryAdmin() {
       await uploadBytes(storageRef, file, { contentType: file.type })
       const url = await getDownloadURL(storageRef)
       setForm((f) => ({ ...f, image: url, type: 'image' }))
+    } catch (e) {
+      window.alert(writeErrorMessage(e))
     } finally {
       setUploading(false)
     }
   }
 
   const onSave = async () => {
-    const payload = {
-      title: form.title,
-      image: form.image,
-      type: form.type,
-      category: form.category,
-      order: Number(form.order),
-    }
-    if (form.id) await saveDoc('gallery', form.id, payload)
-    else await createDoc('gallery', payload)
-    await logActivity('galeria', `Elemento ${form.id ? 'actualizado' : 'creado'}`)
-    setForm({
-      id: '',
-      title: '',
-      image: '',
-      type: 'image',
-      category: 'Pacientes',
-      order: 1,
+    await run(async () => {
+      const payload = {
+        title: form.title,
+        image: form.image,
+        type: form.type,
+        category: form.category,
+        order: Number(form.order),
+      }
+      if (form.id) await saveDoc('gallery', form.id, payload)
+      else await createDoc('gallery', payload)
+      await logActivity('galeria', `Elemento ${form.id ? 'actualizado' : 'creado'}`)
+      setForm({
+        id: '',
+        title: '',
+        image: '',
+        type: 'image',
+        category: 'Pacientes',
+        order: 1,
+      })
+      await load()
+      await refresh()
     })
-    await load()
-    await refresh()
   }
 
   if (loading) {
@@ -147,7 +154,10 @@ export function GalleryAdmin() {
           />
           {uploading && <span className="text-brand-700">Subiendo…</span>}
         </label>
-        <Button onClick={() => void onSave()}>{form.id ? 'Actualizar' : 'Agregar'}</Button>
+        <AdminWriteFeedback error={error} success={success} />
+        <Button onClick={() => void onSave()} disabled={saving}>
+          {saving ? 'Guardando…' : form.id ? 'Actualizar' : 'Agregar'}
+        </Button>
       </div>
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {items.map((item) => (
@@ -163,9 +173,13 @@ export function GalleryAdmin() {
                 <Button size="sm" variant="outline" onClick={() => setForm({ ...item })}>Editar</Button>
                 <Button size="sm" variant="danger" onClick={() => void (async () => {
                   if (!confirm('¿Eliminar?')) return
-                  await removeDoc('gallery', item.id)
-                  await load()
-                  await refresh()
+                  try {
+                    await removeDoc('gallery', item.id)
+                    await load()
+                    await refresh()
+                  } catch (e) {
+                    window.alert(writeErrorMessage(e))
+                  }
                 })()}>Eliminar</Button>
               </div>
             </div>
