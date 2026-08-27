@@ -9,15 +9,17 @@ import { Input } from '@/components/ui/Input'
 import { SectionHeading } from '@/components/ui/SectionHeading'
 import { Textarea } from '@/components/ui/Textarea'
 import { useSite } from '@/contexts/SiteContext'
-import { sanitizeEmail, sanitizePhone, sanitizeText } from '@/lib/sanitize'
+import { sanitizeEmail, sanitizePhone, sanitizeText, sanitizeMapEmbedUrl } from '@/lib/sanitize'
+import { assertPublicFormAllowed } from '@/lib/publicForm'
 import { whatsappUrl } from '@/lib/utils'
 import { createDoc } from '@/services/firestore'
 
 const schema = z.object({
-  name: z.string().min(2, 'Ingresá tu nombre'),
-  email: z.string().email('Correo inválido'),
-  phone: z.string().min(6, 'Teléfono inválido'),
-  message: z.string().min(10, 'Contanos un poco más'),
+  name: z.string().min(2, 'Ingresá tu nombre').max(120),
+  email: z.string().email('Correo inválido').max(120),
+  phone: z.string().min(6, 'Teléfono inválido').max(40),
+  message: z.string().min(10, 'Contanos un poco más').max(2000),
+  website: z.string().max(0).optional(),
 })
 
 type FormData = z.infer<typeof schema>
@@ -33,10 +35,16 @@ export function Contact() {
   } = useForm<FormData>({ resolver: zodResolver(schema) })
 
   const onSubmit = async (data: FormData) => {
+    assertPublicFormAllowed('contacto', data.website || '')
+    const email = sanitizeEmail(data.email)
+    const phone = sanitizePhone(data.phone)
+    if (!email || phone.length < 6) {
+      throw new Error('Revisá el correo y el teléfono.')
+    }
     await createDoc('clients', {
       name: sanitizeText(data.name, 120),
-      email: sanitizeEmail(data.email),
-      phone: sanitizePhone(data.phone),
+      email,
+      phone,
       message: sanitizeText(data.message, 2000),
       type: 'contact',
       createdAt: new Date().toISOString(),
@@ -81,7 +89,7 @@ export function Contact() {
                 <a
                   href={whatsappUrl(site.whatsapp)}
                   target="_blank"
-                  rel="noreferrer"
+                  rel="noopener noreferrer"
                   className="mt-5 inline-block"
                 >
                   <Button variant="whatsapp">Abrir WhatsApp</Button>
@@ -99,23 +107,32 @@ export function Contact() {
                 </ul>
               </div>
               <div className="overflow-hidden rounded-3xl border border-line">
-                <iframe
-                  title="Mapa EcoVet"
-                  src={site.mapEmbedUrl}
-                  className="h-64 w-full"
-                  loading="lazy"
-                  referrerPolicy="no-referrer-when-downgrade"
-                />
+                {sanitizeMapEmbedUrl(site.mapEmbedUrl) ? (
+                  <iframe
+                    title="Mapa EcoVet"
+                    src={sanitizeMapEmbedUrl(site.mapEmbedUrl)}
+                    className="h-64 w-full"
+                    loading="lazy"
+                    referrerPolicy="no-referrer-when-downgrade"
+                  />
+                ) : (
+                  <p className="p-6 text-sm text-muted">
+                    Mapa no disponible. Consultá la dirección en Suipacha 250, Apóstoles.
+                  </p>
+                )}
               </div>
             </div>
 
             <form
               onSubmit={handleSubmit(onSubmit)}
-              className="rounded-[2rem] border border-line bg-white p-6 md:p-8"
+              className="relative rounded-[2rem] border border-line bg-white p-6 md:p-8"
             >
               <h2 className="font-display text-2xl font-semibold">Envianos un mensaje</h2>
               <div className="mt-6 grid gap-4">
                 <Input label="Nombre" {...register('name')} error={errors.name?.message} />
+                <div className="absolute -left-[9999px] h-0 w-0 overflow-hidden" aria-hidden>
+                  <input tabIndex={-1} autoComplete="off" {...register('website')} />
+                </div>
                 <Input
                   label="Correo"
                   type="email"

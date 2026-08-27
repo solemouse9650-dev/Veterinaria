@@ -88,7 +88,7 @@ export function ServiceDetail() {
                   `Hola EcoVet, quiero consultar por el servicio de ${service.name}.`,
                 )}
                 target="_blank"
-                rel="noreferrer"
+                rel="noopener noreferrer"
                 className="w-full sm:w-auto"
               >
                 <Button size="lg" variant="whatsapp" className="w-full sm:w-auto">

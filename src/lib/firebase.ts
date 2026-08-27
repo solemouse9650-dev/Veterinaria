@@ -43,7 +43,7 @@ export function isAuthorizedAdmin(user: {
   if (!user) return false
   const email = user.email?.toLowerCase().trim()
   return (
-    user.uid === ADMIN_UID ||
+    user.uid === ADMIN_UID &&
     email === ADMIN_EMAIL.toLowerCase()
   )
 }

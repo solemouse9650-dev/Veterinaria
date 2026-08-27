@@ -113,7 +113,7 @@ export function Home() {
             <a
               href={whatsappUrl(site.whatsapp)}
               target="_blank"
-              rel="noreferrer"
+              rel="noopener noreferrer"
               className="w-full sm:w-auto"
             >
               <Button size="lg" variant="whatsapp" className="w-full sm:w-auto">
@@ -405,7 +405,7 @@ export function Home() {
               <a
                 href={whatsappUrl(site.whatsapp)}
                 target="_blank"
-                rel="noreferrer"
+                rel="noopener noreferrer"
                 className="w-full sm:w-auto"
               >
                 <Button size="lg" variant="secondary" className="w-full sm:w-auto">

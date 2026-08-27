@@ -3,6 +3,7 @@ import { SEO } from '@/components/seo/SEO'
 import { Button } from '@/components/ui/Button'
 import { useSite } from '@/contexts/SiteContext'
 import { formatDate } from '@/lib/utils'
+import { sanitizeHtml } from '@/lib/sanitize'
 
 export function BlogPost() {
   const { slug } = useParams()
@@ -45,7 +46,7 @@ export function BlogPost() {
           />
           <div
             className="prose-blog mt-8"
-            dangerouslySetInnerHTML={{ __html: post.content }}
+            dangerouslySetInnerHTML={{ __html: sanitizeHtml(post.content) }}
           />
           <Link to="/blog" className="mt-10 inline-block">
             <Button variant="outline">Volver al blog</Button>

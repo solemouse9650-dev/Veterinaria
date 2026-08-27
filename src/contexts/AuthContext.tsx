@@ -63,7 +63,14 @@ function mapAuthError(error: unknown): string {
     case 'auth/requires-recent-login':
       return 'Por seguridad, volvé a iniciar sesión e intentá de nuevo.'
     default:
-      if (error instanceof Error && error.message) return error.message
+      if (
+        error instanceof Error &&
+        (error.message === 'Correo o contraseña incorrectos.' ||
+          error.message === 'Sesión no válida.' ||
+          error.message.startsWith('Demasiados intentos'))
+      ) {
+        return error.message
+      }
       return 'No se pudo completar la operación. Intentá nuevamente.'
   }
 }
@@ -138,7 +145,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (!isAuthorizedAdmin(cred.user)) {
         await signOut(auth)
         registerFailedLogin()
-        throw new Error('Usuario no autorizado para el panel administrativo.')
+        throw new Error('Correo o contraseña incorrectos.')
       }
       clearLoginAttempts()
     } catch (error) {

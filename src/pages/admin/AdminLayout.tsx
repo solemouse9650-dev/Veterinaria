@@ -66,6 +66,13 @@ export function AdminLayout() {
   }
 
   const handleSeed = async () => {
+    if (
+      !window.confirm(
+        'Esto reemplaza el contenido público del sitio en Firestore. ¿Querés continuar?',
+      )
+    ) {
+      return
+    }
     setSeeding(true)
     setSeedMsg('')
     try {

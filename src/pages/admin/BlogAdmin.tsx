@@ -5,6 +5,7 @@ import { LoadingSpinner } from '@/components/ui/LoadingSpinner'
 import { Textarea } from '@/components/ui/Textarea'
 import { useSite } from '@/contexts/SiteContext'
 import { slugify } from '@/lib/utils'
+import { sanitizeHtml } from '@/lib/sanitize'
 import { createDoc, fetchBlog, logActivity, removeDoc, saveDoc } from '@/services/firestore'
 import type { BlogPost } from '@/types'
 
@@ -45,6 +46,7 @@ export function BlogAdmin() {
       ...form,
       slug: form.slug || slugify(form.title),
       published: Boolean(form.published),
+      content: sanitizeHtml(form.content),
     }
     const { id, ...rest } = payload
     if (id) await saveDoc('blog', id, rest)

@@ -8,6 +8,7 @@ import {
 import { Link } from 'react-router-dom'
 import { Logo } from '@/components/brand/Logo'
 import { useSite } from '@/contexts/SiteContext'
+import { sanitizeHttpUrl } from '@/lib/sanitize'
 import { whatsappUrl } from '@/lib/utils'
 
 export function Footer() {
@@ -34,33 +35,26 @@ export function Footer() {
             trato humano.
           </p>
           <div className="mt-5 flex gap-3">
-            <a
-              href={site.social.facebook}
-              aria-label="Facebook"
-              className="rounded-full bg-white/10 p-2 hover:bg-brand-600"
-              target="_blank"
-              rel="noreferrer"
-            >
-              <Share2 className="h-4 w-4" />
-            </a>
-            <a
-              href={site.social.instagram}
-              aria-label="Instagram"
-              className="rounded-full bg-white/10 p-2 hover:bg-brand-600"
-              target="_blank"
-              rel="noreferrer"
-            >
-              <Share2 className="h-4 w-4" />
-            </a>
-            <a
-              href={site.social.youtube}
-              aria-label="YouTube"
-              className="rounded-full bg-white/10 p-2 hover:bg-brand-600"
-              target="_blank"
-              rel="noreferrer"
-            >
-              <Share2 className="h-4 w-4" />
-            </a>
+            {[
+              { href: site.social.facebook, label: 'Facebook' },
+              { href: site.social.instagram, label: 'Instagram' },
+              { href: site.social.youtube, label: 'YouTube' },
+            ].map((item) => {
+              const href = sanitizeHttpUrl(item.href)
+              if (!href) return null
+              return (
+                <a
+                  key={item.label}
+                  href={href}
+                  aria-label={item.label}
+                  className="rounded-full bg-white/10 p-2 hover:bg-brand-600"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <Share2 className="h-4 w-4" />
+                </a>
+              )
+            })}
           </div>
         </div>
 
@@ -105,7 +99,7 @@ export function Footer() {
               <a
                 href={whatsappUrl(site.whatsapp)}
                 target="_blank"
-                rel="noreferrer"
+                rel="noopener noreferrer"
                 className="text-brand-200 hover:text-white"
               >
                 WhatsApp directo
@@ -141,11 +135,20 @@ export function Footer() {
             © {year} {site.name}. Todos los derechos reservados.
           </p>
           <div className="flex flex-wrap gap-4">
+            <Link to="/terminos-y-condiciones" className="hover:text-white">
+              Términos y condiciones
+            </Link>
+            <Link to="/politica-de-privacidad" className="hover:text-white">
+              Privacidad
+            </Link>
+            <Link to="/politica-de-cookies" className="hover:text-white">
+              Cookies
+            </Link>
+            <Link to="/aviso-legal" className="hover:text-white">
+              Aviso legal
+            </Link>
             <Link to="/preguntas-frecuentes" className="hover:text-white">
               Preguntas frecuentes
-            </Link>
-            <Link to="/contacto" className="hover:text-white">
-              Políticas de atención
             </Link>
           </div>
         </div>

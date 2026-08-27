@@ -250,7 +250,7 @@ export function ReservationsAdmin() {
                   <a
                     href={whatsappUrl(r.phone)}
                     target="_blank"
-                    rel="noreferrer"
+                    rel="noopener noreferrer"
                     className="font-medium text-brand-700 hover:underline"
                   >
                     {r.phone}

@@ -2,10 +2,9 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     function isAdmin() {
-      return request.auth != null && (
-        request.auth.uid == '0RWsbSfbtycAnxmaik1wdAz4SRr2' ||
-        request.auth.token.email == 'ecovetaspotoles@gmail.com'
-      );
+      return request.auth != null
+        && request.auth.uid == '0RWsbSfbtycAnxmaik1wdAz4SRr2'
+        && request.auth.token.email == 'ecovetaspotoles@gmail.com';
     }
 
     function isString(field, minLen, maxLen) {
@@ -14,11 +13,24 @@ service cloud.firestore {
         && field.size() <= maxLen;
     }
 
+    function looksLikeEmail(value) {
+      return value is string
+        && value.size() >= 5
+        && value.size() <= 120
+        && value.matches('^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+[.][A-Za-z]{2,}$');
+    }
+
     function validReservation() {
       let d = request.resource.data;
-      return isString(d.firstName, 1, 80)
+      return d.keys().hasOnly([
+          'firstName', 'lastName', 'email', 'phone', 'petName', 'species',
+          'breed', 'age', 'weight', 'serviceId', 'serviceName', 'date', 'time',
+          'veterinarianId', 'veterinarianName', 'notes', 'status',
+          'createdAt', 'updatedAt', 'estimatedPrice'
+        ])
+        && isString(d.firstName, 1, 80)
         && isString(d.lastName, 1, 80)
-        && isString(d.email, 5, 120)
+        && looksLikeEmail(d.email)
         && isString(d.phone, 6, 40)
         && isString(d.petName, 1, 80)
         && isString(d.species, 1, 40)
@@ -33,6 +45,8 @@ service cloud.firestore {
         && isString(d.veterinarianName, 0, 120)
         && isString(d.notes, 0, 1000)
         && d.status == 'pendiente'
+        && isString(d.createdAt, 10, 40)
+        && isString(d.updatedAt, 10, 40)
         && d.estimatedPrice is number
         && d.estimatedPrice >= 0
         && d.estimatedPrice < 100000000;
@@ -40,11 +54,15 @@ service cloud.firestore {
 
     function validContact() {
       let d = request.resource.data;
-      return isString(d.name, 1, 120)
-        && isString(d.email, 5, 120)
+      return d.keys().hasOnly([
+          'name', 'email', 'phone', 'message', 'type', 'createdAt'
+        ])
+        && isString(d.name, 1, 120)
+        && looksLikeEmail(d.email)
         && isString(d.phone, 6, 40)
         && isString(d.message, 5, 2000)
-        && d.type == 'contact';
+        && d.type == 'contact'
+        && isString(d.createdAt, 10, 40);
     }
 
     match /site/{document} {
@@ -99,6 +117,10 @@ service cloud.firestore {
 
     match /activity/{id} {
       allow read, write: if isAdmin();
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
     }
   }
 }

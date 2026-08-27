@@ -1,5 +1,6 @@
 import { Helmet } from 'react-helmet-async'
 import { useSite } from '@/contexts/SiteContext'
+import { encodeJsonForScript, sanitizeHttpUrl } from '@/lib/sanitize'
 
 export function SchemaOrg() {
   const { site, hours } = useSite()
@@ -39,13 +40,15 @@ export function SchemaOrg() {
       site.social.instagram,
       site.social.youtube,
       site.social.tiktok,
-    ],
+    ]
+      .map((url) => sanitizeHttpUrl(url))
+      .filter(Boolean),
     priceRange: '$$',
   }
 
   return (
     <Helmet>
-      <script type="application/ld+json">{JSON.stringify(schema)}</script>
+      <script type="application/ld+json">{encodeJsonForScript(schema)}</script>
     </Helmet>
   )
 }

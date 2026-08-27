@@ -13,24 +13,26 @@ import { Textarea } from '@/components/ui/Textarea'
 import { useSite } from '@/contexts/SiteContext'
 import { timeSlots } from '@/data/seed'
 import { sanitizeEmail, sanitizePhone, sanitizeText } from '@/lib/sanitize'
+import { assertPublicFormAllowed } from '@/lib/publicForm'
 import { formatDate, formatPrice, whatsappUrl } from '@/lib/utils'
 import { createReservation } from '@/services/firestore'
 
 const schema = z.object({
-  firstName: z.string().min(2, 'Requerido'),
-  lastName: z.string().min(2, 'Requerido'),
-  email: z.string().email('Correo inválido'),
-  phone: z.string().min(6, 'Teléfono inválido'),
-  petName: z.string().min(1, 'Requerido'),
-  species: z.string().min(1, 'Seleccioná una especie'),
-  breed: z.string().min(1, 'Requerido'),
-  age: z.string().min(1, 'Requerido'),
-  weight: z.string().min(1, 'Requerido'),
-  serviceId: z.string().min(1, 'Seleccioná un servicio'),
-  date: z.string().min(1, 'Seleccioná una fecha'),
-  time: z.string().min(1, 'Seleccioná una hora'),
-  veterinarianId: z.string().min(1, 'Seleccioná un veterinario'),
-  notes: z.string().optional(),
+  firstName: z.string().min(2, 'Requerido').max(80),
+  lastName: z.string().min(2, 'Requerido').max(80),
+  email: z.string().email('Correo inválido').max(120),
+  phone: z.string().min(6, 'Teléfono inválido').max(40),
+  petName: z.string().min(1, 'Requerido').max(80),
+  species: z.string().min(1, 'Seleccioná una especie').max(40),
+  breed: z.string().min(1, 'Requerido').max(80),
+  age: z.string().min(1, 'Requerido').max(40),
+  weight: z.string().min(1, 'Requerido').max(40),
+  serviceId: z.string().min(1, 'Seleccioná un servicio').max(80),
+  date: z.string().min(1, 'Seleccioná una fecha').max(20),
+  time: z.string().min(1, 'Seleccioná una hora').max(10),
+  veterinarianId: z.string().min(1, 'Seleccioná un veterinario').max(80),
+  notes: z.string().max(1000).optional(),
+  website: z.string().max(0).optional(),
 })
 
 type FormData = z.infer<typeof schema>
@@ -90,6 +92,11 @@ export function Booking() {
   )
 
   const onSubmit = async (data: FormData) => {
+    try {
+      assertPublicFormAllowed('reserva', data.website || '')
+    } catch (e) {
+      throw e instanceof Error ? e : new Error('No se pudo enviar el formulario.')
+    }
     const service = services.find((s) => s.id === data.serviceId)
     const vet = team.find((t) => t.id === data.veterinarianId)
     const now = new Date().toISOString()
@@ -97,6 +104,9 @@ export function Booking() {
     const lastName = sanitizeText(data.lastName, 80)
     const email = sanitizeEmail(data.email)
     const phone = sanitizePhone(data.phone)
+    if (!email || phone.length < 6) {
+      throw new Error('Revisá el correo y el teléfono.')
+    }
     const petName = sanitizeText(data.petName, 80)
     const species = sanitizeText(data.species, 40)
     const breed = sanitizeText(data.breed, 80)
@@ -214,7 +224,7 @@ export function Booking() {
                     `Hola EcoVet, acabo de reservar un turno (ref. ${confirmation.id.slice(0, 8).toUpperCase()}) para ${confirmation.petName}.`,
                   )}
                   target="_blank"
-                  rel="noreferrer"
+                  rel="noopener noreferrer"
                 >
                   <Button variant="whatsapp">
                     <MessageCircle className="h-4 w-4" />
@@ -232,10 +242,17 @@ export function Booking() {
           ) : (
             <form
               onSubmit={handleSubmit(onSubmit)}
-              className="rounded-[2rem] border border-line bg-white p-6 md:p-8"
+              className="relative rounded-[2rem] border border-line bg-white p-6 md:p-8"
             >
               <div className="grid gap-4 md:grid-cols-2">
                 <Input label="Nombre" {...register('firstName')} error={errors.firstName?.message} />
+                <div className="absolute -left-[9999px] h-0 w-0 overflow-hidden" aria-hidden>
+                  <input
+                    tabIndex={-1}
+                    autoComplete="off"
+                    {...register('website')}
+                  />
+                </div>
                 <Input label="Apellido" {...register('lastName')} error={errors.lastName?.message} />
                 <Input label="Correo" type="email" {...register('email')} error={errors.email?.message} />
                 <Input

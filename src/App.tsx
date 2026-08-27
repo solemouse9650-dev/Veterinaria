@@ -28,6 +28,12 @@ import { HeroAdmin } from '@/pages/admin/HeroAdmin'
 import { TestimonialsAdmin } from '@/pages/admin/TestimonialsAdmin'
 import { SiteAdmin } from '@/pages/admin/SiteAdmin'
 import { SecurityAdmin } from '@/pages/admin/SecurityAdmin'
+import {
+  CookiesPage,
+  LegalNoticePage,
+  PrivacyPage,
+  TermsPage,
+} from '@/pages/Legal'
 
 export default function App() {
   return (
@@ -47,6 +53,10 @@ export default function App() {
           <Route path="reservas" element={<Booking />} />
           <Route path="contacto" element={<Contact />} />
           <Route path="preguntas-frecuentes" element={<FAQPage />} />
+          <Route path="terminos-y-condiciones" element={<TermsPage />} />
+          <Route path="politica-de-privacidad" element={<PrivacyPage />} />
+          <Route path="politica-de-cookies" element={<CookiesPage />} />
+          <Route path="aviso-legal" element={<LegalNoticePage />} />
           <Route path="*" element={<NotFound />} />
         </Route>
 

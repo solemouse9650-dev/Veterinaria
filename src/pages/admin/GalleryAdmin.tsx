@@ -44,13 +44,30 @@ export function GalleryAdmin() {
 
   const onUpload = async (file: File | null) => {
     if (!file) return
+    const allowed = ['image/jpeg', 'image/png', 'image/webp', 'image/gif']
+    if (!allowed.includes(file.type)) {
+      window.alert('Solo se permiten imágenes JPG, PNG, WEBP o GIF.')
+      return
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      window.alert('La imagen no puede superar los 5 MB.')
+      return
+    }
     setUploading(true)
     try {
-      const path = `gallery/${Date.now()}-${file.name}`
+      const ext =
+        file.type === 'image/png'
+          ? 'png'
+          : file.type === 'image/webp'
+            ? 'webp'
+            : file.type === 'image/gif'
+              ? 'gif'
+              : 'jpg'
+      const path = `gallery/${crypto.randomUUID()}.${ext}`
       const storageRef = ref(storage, path)
-      await uploadBytes(storageRef, file)
+      await uploadBytes(storageRef, file, { contentType: file.type })
       const url = await getDownloadURL(storageRef)
-      setForm((f) => ({ ...f, image: url }))
+      setForm((f) => ({ ...f, image: url, type: 'image' }))
     } finally {
       setUploading(false)
     }
@@ -111,7 +128,7 @@ export function GalleryAdmin() {
           <span className="font-medium">Subir archivo</span>
           <input
             type="file"
-            accept="image/*,video/*"
+            accept="image/jpeg,image/png,image/webp,image/gif"
             className="block w-full text-sm"
             onChange={(e) => void onUpload(e.target.files?.[0] || null)}
           />

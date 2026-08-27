@@ -12,6 +12,7 @@ import {
   type DocumentData,
 } from 'firebase/firestore'
 import { db } from '@/lib/firebase'
+import { sanitizeHtml } from '@/lib/sanitize'
 import type {
   ActivityLog,
   BlogPost,
@@ -77,17 +78,45 @@ export async function fetchGallery(): Promise<GalleryItem[]> {
   return data.length ? data : seedGallery
 }
 
+const WRITABLE_COLLECTIONS = new Set([
+  'services',
+  'team',
+  'gallery',
+  'blog',
+  'faqs',
+  'testimonials',
+  'site',
+  'hours',
+  'clients',
+  'reservations',
+  'activity',
+])
+
+function assertWritableCollection(name: string) {
+  if (!WRITABLE_COLLECTIONS.has(name)) {
+    throw new Error('Colección no permitida.')
+  }
+}
+
 export async function fetchBlog(): Promise<BlogPost[]> {
   try {
     const snap = await getDocs(collection(db, 'blog'))
-    const data = snap.docs.map((d) => ({ id: d.id, ...d.data() }) as BlogPost)
-    if (!data.length) return seedBlog
+    const data = snap.docs.map((d) => {
+      const post = { id: d.id, ...d.data() } as BlogPost
+      return { ...post, content: sanitizeHtml(post.content) }
+    })
+    if (!data.length) {
+      return seedBlog.map((post) => ({
+        ...post,
+        content: sanitizeHtml(post.content),
+      }))
+    }
     return data.sort(
       (a, b) =>
         new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime(),
     )
   } catch {
-    return seedBlog
+    return seedBlog.map((post) => ({ ...post, content: sanitizeHtml(post.content) }))
   }
 }
 
@@ -139,15 +168,18 @@ export async function saveDoc(
   id: string,
   data: DocumentData,
 ) {
+  assertWritableCollection(collectionName)
   await setDoc(doc(db, collectionName, id), data, { merge: true })
 }
 
 export async function createDoc(collectionName: string, data: DocumentData) {
+  assertWritableCollection(collectionName)
   const ref = await addDoc(collection(db, collectionName), data)
   return ref.id
 }
 
 export async function removeDoc(collectionName: string, id: string) {
+  assertWritableCollection(collectionName)
   await deleteDoc(doc(db, collectionName, id))
 }
 

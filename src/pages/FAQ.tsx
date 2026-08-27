@@ -28,7 +28,7 @@ export function FAQPage() {
             <Link to="/reservas">
               <Button>Reservar turno</Button>
             </Link>
-            <a href={whatsappUrl(site.whatsapp)} target="_blank" rel="noreferrer">
+            <a href={whatsappUrl(site.whatsapp)} target="_blank" rel="noopener noreferrer">
               <Button variant="whatsapp">Consultar por WhatsApp</Button>
             </a>
           </div>
