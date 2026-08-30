@@ -45,6 +45,26 @@ export function normalizePhone(phone: string) {
   return clean
 }
 
+/** wa.me para números internacionales (código de país + teléfono local). */
+export function internationalWhatsAppUrl(
+  countryCode: string,
+  phone: string,
+  message?: string,
+) {
+  const code = countryCode.replace(/\D/g, '')
+  const local = phone.replace(/\D/g, '')
+  const digits = !local
+    ? ''
+    : code && local.startsWith(code)
+      ? local
+      : `${code}${local}`
+  const text = encodeURIComponent(
+    message ||
+      'Hola EcoVet, me gustaría consultar sobre telemedicina veterinaria.',
+  )
+  return `https://wa.me/${digits}?text=${text}`
+}
+
 export function whatsappUrl(phone: string, message?: string) {
   const clean = normalizePhone(phone)
   const text = encodeURIComponent(

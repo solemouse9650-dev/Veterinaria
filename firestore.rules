@@ -52,6 +52,38 @@ service cloud.firestore {
         && d.estimatedPrice < 100000000;
     }
 
+    function validTelemedicineRequest() {
+      let d = request.resource.data;
+      return d.keys().hasOnly([
+          'ownerName', 'country', 'city', 'countryCode', 'phone', 'whatsapp',
+          'email', 'petName', 'species', 'breed', 'age', 'sex',
+          'consultationReason', 'description', 'durationNote',
+          'additionalInformation', 'status', 'createdAt', 'updatedAt',
+          'termsAccepted', 'contactConsent'
+        ])
+        && isString(d.ownerName, 2, 120)
+        && isString(d.country, 2, 80)
+        && isString(d.city, 1, 80)
+        && isString(d.countryCode, 1, 8)
+        && isString(d.phone, 6, 40)
+        && isString(d.whatsapp, 6, 40)
+        && looksLikeEmail(d.email)
+        && isString(d.petName, 1, 80)
+        && isString(d.species, 1, 40)
+        && isString(d.breed, 1, 80)
+        && isString(d.age, 1, 40)
+        && isString(d.sex, 1, 20)
+        && isString(d.consultationReason, 1, 120)
+        && isString(d.description, 10, 2000)
+        && isString(d.durationNote, 1, 80)
+        && isString(d.additionalInformation, 0, 2000)
+        && d.status == 'pendiente'
+        && isString(d.createdAt, 10, 40)
+        && isString(d.updatedAt, 10, 40)
+        && d.termsAccepted == true
+        && d.contactConsent == true;
+    }
+
     function validContact() {
       let d = request.resource.data;
       return d.keys().hasOnly([
@@ -112,6 +144,11 @@ service cloud.firestore {
 
     match /clients/{id} {
       allow create: if validContact();
+      allow read, update, delete: if isAdmin();
+    }
+
+    match /telemedicine_requests/{id} {
+      allow create: if validTelemedicineRequest();
       allow read, update, delete: if isAdmin();
     }
 

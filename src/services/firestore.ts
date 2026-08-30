@@ -25,6 +25,7 @@ import type {
   Service,
   SiteInfo,
   TeamMember,
+  TelemedicineRequest,
   Testimonial,
 } from '@/types'
 import {
@@ -103,6 +104,7 @@ const WRITABLE_COLLECTIONS = new Set([
   'hours',
   'clients',
   'reservations',
+  'telemedicine_requests',
   'activity',
 ])
 
@@ -189,6 +191,62 @@ export async function updateReservation(
 
 export async function deleteReservation(id: string) {
   await deleteDoc(doc(requireDb(), 'reservations', id))
+}
+
+const TELEMEDICINE_ADMIN_FIELDS = new Set([
+  'status',
+  'adminNotes',
+  'contactedAt',
+  'scheduledAt',
+  'consultationMethod',
+  'updatedAt',
+])
+
+export async function createTelemedicineRequest(
+  data: Omit<TelemedicineRequest, 'id' | 'adminNotes' | 'contactedAt' | 'scheduledAt' | 'consultationMethod'>,
+): Promise<string> {
+  if (!db) {
+    throw new Error(
+      'No se pudo enviar la solicitud. Escribinos por WhatsApp para coordinar la consulta.',
+    )
+  }
+  const ref = await addDoc(collection(requireDb(), 'telemedicine_requests'), data)
+  return ref.id
+}
+
+export async function fetchTelemedicineRequests(): Promise<TelemedicineRequest[]> {
+  if (!db) return []
+  const snap = await getDocs(collection(requireDb(), 'telemedicine_requests'))
+  return snap.docs
+    .map((d) => ({ id: d.id, ...d.data() }) as TelemedicineRequest)
+    .sort(
+      (a, b) =>
+        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+    )
+}
+
+export async function updateTelemedicineRequest(
+  id: string,
+  data: Partial<
+    Pick<
+      TelemedicineRequest,
+      | 'status'
+      | 'adminNotes'
+      | 'contactedAt'
+      | 'scheduledAt'
+      | 'consultationMethod'
+      | 'updatedAt'
+    >
+  >,
+) {
+  const clean: Record<string, unknown> = {}
+  for (const [key, value] of Object.entries(data)) {
+    if (TELEMEDICINE_ADMIN_FIELDS.has(key) && value !== undefined) {
+      clean[key] = value
+    }
+  }
+  if (!Object.keys(clean).length) return
+  await updateDoc(doc(requireDb(), 'telemedicine_requests', id), clean)
 }
 
 function omitUndefined(value: unknown): unknown {

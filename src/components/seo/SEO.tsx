@@ -3,6 +3,7 @@ import { useSite } from '@/contexts/SiteContext'
 
 interface SEOProps {
   title?: string
+  absoluteTitle?: string
   description?: string
   path?: string
   image?: string
@@ -11,13 +12,18 @@ interface SEOProps {
 
 export function SEO({
   title,
+  absoluteTitle,
   description,
   path = '/',
   image,
   type = 'website',
 }: SEOProps) {
   const { site, hero } = useSite()
-  const fullTitle = title ? `${title} | ${site.name}` : `${site.name} | ${site.tagline}`
+  const fullTitle = absoluteTitle
+    ? absoluteTitle
+    : title
+      ? `${title} | ${site.name}`
+      : `${site.name} | ${site.tagline}`
   const desc = description || site.description
   const url = `https://ecovet.clinic${path}`
   const ogImage = image || hero.image

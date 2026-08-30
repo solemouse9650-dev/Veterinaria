@@ -12,6 +12,7 @@ const links = [
   { to: '/', label: 'Inicio' },
   { to: '/nosotros', label: 'Nosotros' },
   { to: '/servicios', label: 'Servicios' },
+  { to: '/telemedicina', label: 'Telemedicina' },
   { to: '/especialidades', label: 'Especialidades' },
   { to: '/equipo', label: 'Equipo' },
   { to: '/galeria', label: 'Galería' },

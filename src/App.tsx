@@ -13,6 +13,7 @@ import { ServiceDetail } from '@/pages/ServiceDetail'
 import { Services } from '@/pages/Services'
 import { Specialties } from '@/pages/Specialties'
 import { Team } from '@/pages/Team'
+import { Telemedicine } from '@/pages/Telemedicine'
 import { AdminLayout } from '@/pages/admin/AdminLayout'
 import { AdminLogin } from '@/pages/admin/Login'
 import { AdminDashboard } from '@/pages/admin/Dashboard'
@@ -27,6 +28,7 @@ import { HeroAdmin } from '@/pages/admin/HeroAdmin'
 import { TestimonialsAdmin } from '@/pages/admin/TestimonialsAdmin'
 import { SiteAdmin } from '@/pages/admin/SiteAdmin'
 import { SecurityAdmin } from '@/pages/admin/SecurityAdmin'
+import { TelemedicineAdmin } from '@/pages/admin/TelemedicineAdmin'
 
 export default function App() {
   return (
@@ -44,6 +46,7 @@ export default function App() {
           <Route path="blog" element={<Blog />} />
           <Route path="blog/:slug" element={<BlogPost />} />
           <Route path="reservas" element={<Booking />} />
+          <Route path="telemedicina" element={<Telemedicine />} />
           <Route path="contacto" element={<Contact />} />
           <Route path="*" element={<NotFound />} />
         </Route>
@@ -52,6 +55,7 @@ export default function App() {
         <Route path="/admin" element={<AdminLayout />}>
           <Route index element={<AdminDashboard />} />
           <Route path="reservas" element={<ReservationsAdmin />} />
+          <Route path="telemedicina" element={<TelemedicineAdmin />} />
           <Route path="servicios" element={<ServicesAdmin />} />
           <Route path="equipo" element={<TeamAdmin />} />
           <Route path="galeria" element={<GalleryAdmin />} />

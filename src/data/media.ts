@@ -11,6 +11,11 @@ function patientSrc(id: number) {
     : `/fotovet/pacientes/fotovet-${id}.jpeg`
 }
 
+export const TELEMEDICINE_PHOTO = {
+  src: '/fotovet/Telemedicina/Vete_telemedicina.jpeg',
+  alt: 'Profesional de EcoVet Clínica Veterinaria trabajando en consulta de telemedicina',
+} as const
+
 export const TEAM_PHOTOS = {
   claudia: '/fotovet/equipo/claudia-koziuk.jpeg',
   martin: '/fotovet/equipo/martin-zuchino.jpeg',

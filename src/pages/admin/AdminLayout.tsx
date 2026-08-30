@@ -13,6 +13,7 @@ import {
   Sparkles,
   Stethoscope,
   Users,
+  Video,
   X,
 } from 'lucide-react'
 import { useEffect, useState } from 'react'
@@ -24,6 +25,7 @@ import { cn } from '@/lib/utils'
 const links = [
   { to: '/admin', label: 'Dashboard', icon: LayoutDashboard, end: true },
   { to: '/admin/reservas', label: 'Reservas', icon: CalendarDays },
+  { to: '/admin/telemedicina', label: 'Telemedicina', icon: Video },
   { to: '/admin/servicios', label: 'Servicios', icon: Stethoscope },
   { to: '/admin/equipo', label: 'Equipo', icon: Users },
   { to: '/admin/galeria', label: 'Galería', icon: ImageIcon },

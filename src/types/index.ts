@@ -170,3 +170,40 @@ export interface ActivityLog {
   detail: string
   createdAt: string
 }
+
+export type TelemedicineStatus =
+  | 'pendiente'
+  | 'contactado'
+  | 'coordinando'
+  | 'confirmado'
+  | 'realizado'
+  | 'cancelado'
+
+export interface TelemedicineRequest {
+  id: string
+  ownerName: string
+  country: string
+  city: string
+  countryCode: string
+  phone: string
+  whatsapp: string
+  email: string
+  petName: string
+  species: string
+  breed: string
+  age: string
+  sex: string
+  consultationReason: string
+  description: string
+  durationNote: string
+  additionalInformation: string
+  status: TelemedicineStatus
+  createdAt: string
+  updatedAt: string
+  termsAccepted: boolean
+  contactConsent: boolean
+  adminNotes?: string
+  contactedAt?: string
+  scheduledAt?: string
+  consultationMethod?: string
+}

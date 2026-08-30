@@ -36,6 +36,12 @@ export function Footer() {
             {site.tagline}. Atención veterinaria integral con enfoque preventivo y
             trato humano.
           </p>
+          <Link
+            to="/telemedicina"
+            className="mt-4 inline-block text-sm font-medium text-brand-200 hover:text-white"
+          >
+            Telemedicina veterinaria online
+          </Link>
           <div className="mt-5 flex flex-wrap gap-2.5">
             {facebook ? (
               <a
