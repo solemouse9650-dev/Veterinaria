@@ -50,7 +50,7 @@ const schema = z.object({
   contactConsent: z.boolean().refine((value) => value === true, {
     message: 'Necesitamos tu consentimiento para contactarte',
   }),
-  website: z.string().max(0).optional(),
+  hp_field: z.string().optional(),
 })
 
 type FormData = z.infer<typeof schema>
@@ -111,14 +111,18 @@ export function Telemedicine() {
     formState: { errors, isSubmitting },
   } = useForm<FormData>({
     resolver: zodResolver(schema),
+    shouldFocusError: true,
     defaultValues: {
       country: 'Argentina',
       countryCode: '+54',
       species: 'Perro',
       sex: 'Macho',
+      consultationReason: '',
+      durationNote: '',
       additionalInformation: '',
       termsAccepted: false,
       contactConsent: false,
+      hp_field: '',
     },
   })
 
@@ -160,10 +164,23 @@ export function Telemedicine() {
 
   const countryField = register('country')
 
+  const onInvalid = () => {
+    setSubmitError('Revisá los campos marcados para enviar la solicitud.')
+    window.requestAnimationFrame(() => {
+      document
+        .querySelector('#solicitud .text-red-600')
+        ?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    })
+  }
+
   const onSubmit = async (data: FormData) => {
     setSubmitError('')
+    if ((data.hp_field || '').trim()) {
+      setConfirmation(true)
+      return
+    }
     try {
-      assertPublicFormAllowed('telemedicina', data.website || '')
+      assertPublicFormAllowed('telemedicina', '')
     } catch {
       setSubmitError('Esperá unos segundos antes de volver a enviar.')
       return
@@ -262,17 +279,18 @@ export function Telemedicine() {
                 coordinar la modalidad de atención.
               </p>
               <div className="mt-8 flex w-full flex-col gap-2.5 sm:w-auto sm:flex-row sm:flex-wrap sm:gap-3">
-                <a href="#solicitud" className="w-full sm:w-auto">
-                  <Button size="lg" className="w-full sm:w-auto">
-                    Solicitar consulta online
-                  </Button>
-                </a>
-                <a href="#como-funciona" className="w-full sm:w-auto">
-                  <Button
-                    size="lg"
-                    variant="outline"
-                    className="w-full border-white/30 bg-white/10 text-white hover:bg-white hover:text-ink sm:w-auto"
-                  >
+            <a href="#solicitud" className="w-full sm:w-auto">
+              <Button type="button" size="lg" className="w-full sm:w-auto">
+                Solicitar consulta online
+              </Button>
+            </a>
+            <a href="#como-funciona" className="w-full sm:w-auto">
+              <Button
+                type="button"
+                size="lg"
+                variant="outline"
+                className="w-full border-white/30 bg-white/10 text-white hover:bg-white hover:text-ink sm:w-auto"
+              >
                     ¿Cómo funciona?
                   </Button>
                 </a>
@@ -373,12 +391,16 @@ export function Telemedicine() {
             </div>
           ) : (
             <form
-              onSubmit={handleSubmit(onSubmit)}
+              onSubmit={handleSubmit(onSubmit, onInvalid)}
               className="relative rounded-[2rem] border border-line bg-canvas p-6 md:p-8"
               noValidate
             >
               <div className="absolute -left-[9999px] h-0 w-0 overflow-hidden" aria-hidden>
-                <input tabIndex={-1} autoComplete="off" {...register('website')} />
+                <input
+                  tabIndex={-1}
+                  autoComplete="off"
+                  {...register('hp_field')}
+                />
               </div>
 
               <fieldset className="space-y-4">

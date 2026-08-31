@@ -173,6 +173,11 @@ export interface ContactMessage {
   type: 'contact'
   createdAt: string
   read?: boolean
+  status?: string
+  adminNotes?: string
+  contactedAt?: string
+  scheduledAt?: string
+  consultationMethod?: string
 }
 
 export interface ActivityLog {
@@ -217,4 +222,5 @@ export interface TelemedicineRequest {
   contactedAt?: string
   scheduledAt?: string
   consultationMethod?: string
+  storage?: 'telemedicine_requests' | 'clients'
 }

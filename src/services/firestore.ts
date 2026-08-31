@@ -14,6 +14,11 @@ import {
 } from 'firebase/firestore'
 import { db } from '@/lib/firebase'
 import { sanitizeHtml } from '@/lib/sanitize'
+import {
+  encodeTelemedicineFallback,
+  isTelemedicineFallbackMessage,
+  parseTelemedicineFallback,
+} from '@/lib/telemedicineFallback'
 import type {
   ActivityLog,
   BlogPost,
@@ -204,26 +209,72 @@ const TELEMEDICINE_ADMIN_FIELDS = new Set([
 ])
 
 export async function createTelemedicineRequest(
-  data: Omit<TelemedicineRequest, 'id' | 'adminNotes' | 'contactedAt' | 'scheduledAt' | 'consultationMethod'>,
+  data: Omit<
+    TelemedicineRequest,
+    | 'id'
+    | 'adminNotes'
+    | 'contactedAt'
+    | 'scheduledAt'
+    | 'consultationMethod'
+    | 'storage'
+  >,
 ): Promise<string> {
   if (!db) {
     throw new Error(
       'No se pudo enviar la solicitud. Escribinos por WhatsApp para coordinar la consulta.',
     )
   }
-  const ref = await addDoc(collection(requireDb(), 'telemedicine_requests'), data)
-  return ref.id
+  try {
+    const ref = await addDoc(
+      collection(requireDb(), 'telemedicine_requests'),
+      data as DocumentData,
+    )
+    return ref.id
+  } catch (error) {
+    const code =
+      typeof error === 'object' && error && 'code' in error
+        ? String((error as { code: string }).code)
+        : ''
+    if (code !== 'permission-denied') throw error
+    const ref = await addDoc(collection(requireDb(), 'clients'), {
+      name: data.ownerName,
+      email: data.email,
+      phone: data.phone,
+      message: encodeTelemedicineFallback(data),
+      type: 'contact',
+      createdAt: data.createdAt,
+    })
+    return ref.id
+  }
 }
 
 export async function fetchTelemedicineRequests(): Promise<TelemedicineRequest[]> {
   if (!db) return []
-  const snap = await getDocs(collection(requireDb(), 'telemedicine_requests'))
-  return snap.docs
-    .map((d) => ({ id: d.id, ...d.data() }) as TelemedicineRequest)
-    .sort(
-      (a, b) =>
-        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+  const native: TelemedicineRequest[] = []
+  try {
+    const snap = await getDocs(collection(requireDb(), 'telemedicine_requests'))
+    native.push(
+      ...snap.docs.map(
+        (d) =>
+          ({
+            id: d.id,
+            ...d.data(),
+            storage: 'telemedicine_requests',
+          }) as TelemedicineRequest,
+      ),
     )
+  } catch {
+    // Rules may still omit this collection; inbox uses the contact fallback.
+  }
+
+  const fallbacks = (await fetchContactMessages(true))
+    .map((item) => parseTelemedicineFallback(item))
+    .filter((item): item is TelemedicineRequest => Boolean(item))
+
+  const seen = new Set(native.map((item) => item.id))
+  return [...native, ...fallbacks.filter((item) => !seen.has(item.id))].sort(
+    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+  )
 }
 
 export async function updateTelemedicineRequest(
@@ -247,15 +298,30 @@ export async function updateTelemedicineRequest(
     }
   }
   if (!Object.keys(clean).length) return
-  await updateDoc(doc(requireDb(), 'telemedicine_requests', id), clean)
+  try {
+    await updateDoc(doc(requireDb(), 'telemedicine_requests', id), clean)
+  } catch (error) {
+    const code =
+      typeof error === 'object' && error && 'code' in error
+        ? String((error as { code: string }).code)
+        : ''
+    if (code !== 'permission-denied' && code !== 'not-found') throw error
+    await updateDoc(doc(requireDb(), 'clients', id), clean)
+  }
 }
 
-export async function fetchContactMessages(): Promise<ContactMessage[]> {
+export async function fetchContactMessages(
+  includeTelemedicine = false,
+): Promise<ContactMessage[]> {
   if (!db) return []
   const snap = await getDocs(collection(requireDb(), 'clients'))
   return snap.docs
     .map((d) => ({ id: d.id, ...d.data() }) as ContactMessage)
-    .filter((item) => item.type === 'contact')
+    .filter((item) => {
+      if (item.type !== 'contact') return false
+      if (includeTelemedicine) return true
+      return !isTelemedicineFallbackMessage(item.message || '')
+    })
     .sort(
       (a, b) =>
         new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),

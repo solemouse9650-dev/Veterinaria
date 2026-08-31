@@ -21,7 +21,7 @@ const schema = z.object({
   email: z.string().email('Correo inválido').max(120),
   phone: z.string().min(6, 'Teléfono inválido').max(40),
   message: z.string().min(10, 'Contanos un poco más').max(2000),
-  website: z.string().max(0).optional(),
+  website: z.string().optional(),
 })
 
 type FormData = z.infer<typeof schema>
@@ -41,9 +41,14 @@ export function Contact() {
     setSent(false)
     setSubmitError('')
     try {
-      assertPublicFormAllowed('contacto', data.website || '')
+      assertPublicFormAllowed('contacto', '')
     } catch {
       setSubmitError('Esperá unos segundos antes de volver a enviar.')
+      return
+    }
+    if ((data.website || '').trim()) {
+      setSent(true)
+      reset()
       return
     }
     const email = sanitizeEmail(data.email)

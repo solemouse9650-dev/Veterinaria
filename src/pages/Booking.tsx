@@ -33,7 +33,7 @@ const schema = z.object({
   time: z.string().min(1, 'Seleccioná una hora').max(10),
   veterinarianId: z.string().min(1, 'Seleccioná un veterinario').max(80),
   notes: z.string().max(1000).optional(),
-  website: z.string().max(0).optional(),
+  website: z.string().optional(),
 })
 
 type FormData = z.infer<typeof schema>
@@ -93,8 +93,9 @@ export function Booking() {
   )
 
   const onSubmit = async (data: FormData) => {
+    if ((data.website || '').trim()) return
     try {
-      assertPublicFormAllowed('reserva', data.website || '')
+      assertPublicFormAllowed('reserva', '')
     } catch (e) {
       throw e instanceof Error ? e : new Error('No se pudo enviar el formulario.')
     }
