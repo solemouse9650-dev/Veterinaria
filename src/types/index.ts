@@ -164,6 +164,17 @@ export interface Specialty {
   features: string[]
 }
 
+export interface ContactMessage {
+  id: string
+  name: string
+  email: string
+  phone: string
+  message: string
+  type: 'contact'
+  createdAt: string
+  read?: boolean
+}
+
 export interface ActivityLog {
   id: string
   action: string

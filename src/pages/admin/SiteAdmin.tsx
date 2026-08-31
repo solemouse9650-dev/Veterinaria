@@ -16,7 +16,14 @@ export function SiteAdmin() {
 
   useEffect(() => {
     void (async () => {
-      setSite(await fetchSiteInfo())
+      const data = await fetchSiteInfo()
+      setSite({
+        ...data,
+        social: {
+          ...data.social,
+          instagram: 'https://www.instagram.com/ecovet_apostoles/',
+        },
+      })
       setLoading(false)
     })()
   }, [])

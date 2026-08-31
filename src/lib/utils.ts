@@ -30,22 +30,30 @@ export function slugify(text: string) {
     .replace(/(^-|-$)/g, '')
 }
 
-/** Normaliza teléfonos AR/locales para wa.me */
+/** Normaliza teléfonos argentinos para wa.me: 549 + código de área + número. */
 export function normalizePhone(phone: string) {
   let clean = phone.replace(/\D/g, '')
   if (!clean) return ''
-  if (clean.startsWith('54')) return clean
+
+  if (clean.startsWith('549') && clean.length >= 12) return clean
+
+  if (clean.startsWith('54') && !clean.startsWith('549')) {
+    return `549${clean.slice(2)}`
+  }
+
   if (clean.startsWith('0')) clean = clean.slice(1)
   if (clean.startsWith('15') && clean.length >= 10) {
     clean = clean.slice(2)
   }
-  // Celulares AR suelen quedar en 10 dígitos (ej. 11xxxxxxxx)
+  if (clean.startsWith('9') && clean.length >= 11) {
+    return `54${clean}`
+  }
   if (clean.length === 10) return `549${clean}`
   if (clean.length === 8 || clean.length === 9) return `54911${clean}`
   return clean
 }
 
-/** wa.me para números internacionales (código de país + teléfono local). */
+/** wa.me para números internacionales. Argentina usa 549; otros países no se alteran. */
 export function internationalWhatsAppUrl(
   countryCode: string,
   phone: string,
@@ -53,11 +61,14 @@ export function internationalWhatsAppUrl(
 ) {
   const code = countryCode.replace(/\D/g, '')
   const local = phone.replace(/\D/g, '')
-  const digits = !local
+  let digits = !local
     ? ''
     : code && local.startsWith(code)
       ? local
       : `${code}${local}`
+  if (code === '54' || digits.startsWith('54')) {
+    digits = normalizePhone(digits || local)
+  }
   const text = encodeURIComponent(
     message ||
       'Hola EcoVet, me gustaría consultar sobre telemedicina veterinaria.',

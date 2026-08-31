@@ -29,6 +29,7 @@ type FormData = z.infer<typeof schema>
 export function Contact() {
   const { site, hours } = useSite()
   const [sent, setSent] = useState(false)
+  const [submitError, setSubmitError] = useState('')
   const {
     register,
     handleSubmit,
@@ -37,22 +38,34 @@ export function Contact() {
   } = useForm<FormData>({ resolver: zodResolver(schema) })
 
   const onSubmit = async (data: FormData) => {
-    assertPublicFormAllowed('contacto', data.website || '')
+    setSent(false)
+    setSubmitError('')
+    try {
+      assertPublicFormAllowed('contacto', data.website || '')
+    } catch {
+      setSubmitError('Esperá unos segundos antes de volver a enviar.')
+      return
+    }
     const email = sanitizeEmail(data.email)
     const phone = sanitizePhone(data.phone)
-    if (!email || phone.length < 6) {
-      throw new Error('Revisá el correo y el teléfono.')
+    if (!email || phone.replace(/\D/g, '').length < 6) {
+      setSubmitError('Revisá el correo y el teléfono.')
+      return
     }
-    await createDoc('clients', {
-      name: sanitizeText(data.name, 120),
-      email,
-      phone,
-      message: sanitizeText(data.message, 2000),
-      type: 'contact',
-      createdAt: new Date().toISOString(),
-    })
-    setSent(true)
-    reset()
+    try {
+      await createDoc('clients', {
+        name: sanitizeText(data.name, 120),
+        email,
+        phone,
+        message: sanitizeText(data.message, 2000),
+        type: 'contact',
+        createdAt: new Date().toISOString(),
+      })
+      setSent(true)
+      reset()
+    } catch {
+      setSubmitError('No pudimos enviar el mensaje. Revisá tu conexión e intentá nuevamente.')
+    }
   }
 
   return (
@@ -154,6 +167,11 @@ export function Contact() {
                 <Button type="submit" disabled={isSubmitting}>
                   {isSubmitting ? 'Enviando…' : 'Enviar mensaje'}
                 </Button>
+                {submitError && (
+                  <p className="text-sm text-red-600" role="alert">
+                    {submitError}
+                  </p>
+                )}
                 {sent && (
                   <p className="inline-flex items-center gap-2 text-sm font-medium text-brand-700">
                     <CheckCircle2 className="h-4 w-4" />

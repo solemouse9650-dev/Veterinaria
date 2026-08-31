@@ -36,7 +36,7 @@ export const siteInfo: SiteInfo = {
   social: {
     facebook:
       'https://www.facebook.com/people/EcoVet-Cl%C3%ADnica-veterinaria/61572983251304/',
-    instagram: 'https://instagram.com/ecovet_apostoles',
+    instagram: 'https://www.instagram.com/ecovet_apostoles/',
   },
   yearsExperience: 0,
   patientsServed: 0,

@@ -17,6 +17,7 @@ import { sanitizeHtml } from '@/lib/sanitize'
 import type {
   ActivityLog,
   BlogPost,
+  ContactMessage,
   FAQ,
   GalleryItem,
   HeroContent,
@@ -247,6 +248,31 @@ export async function updateTelemedicineRequest(
   }
   if (!Object.keys(clean).length) return
   await updateDoc(doc(requireDb(), 'telemedicine_requests', id), clean)
+}
+
+export async function fetchContactMessages(): Promise<ContactMessage[]> {
+  if (!db) return []
+  const snap = await getDocs(collection(requireDb(), 'clients'))
+  return snap.docs
+    .map((d) => ({ id: d.id, ...d.data() }) as ContactMessage)
+    .filter((item) => item.type === 'contact')
+    .sort(
+      (a, b) =>
+        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+    )
+}
+
+export async function updateContactMessage(
+  id: string,
+  data: Pick<ContactMessage, 'read'>,
+) {
+  await updateDoc(doc(requireDb(), 'clients', id), {
+    read: data.read === true,
+  })
+}
+
+export async function deleteContactMessage(id: string) {
+  await deleteDoc(doc(requireDb(), 'clients', id))
 }
 
 function omitUndefined(value: unknown): unknown {

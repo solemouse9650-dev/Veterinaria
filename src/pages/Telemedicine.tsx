@@ -234,46 +234,50 @@ export function Telemedicine() {
         <script type="application/ld+json">{schemaJson}</script>
       </Helmet>
 
-      <section className="relative min-h-[78svh] overflow-hidden">
-        <div className="absolute inset-0">
-          <img
-            src={TELEMEDICINE_PHOTO.src}
-            alt={TELEMEDICINE_PHOTO.alt}
-            className="h-full w-full object-cover object-[center_20%]"
-            fetchPriority="high"
-          />
-          <div className="absolute inset-0 bg-gradient-to-b from-ink/85 via-ink/70 to-brand-900/50 md:bg-gradient-to-r md:from-ink/90 md:via-ink/70 md:to-brand-900/35" />
-        </div>
-        <div className="relative container-page flex min-h-[78svh] flex-col justify-end pb-10 pt-28 sm:justify-center sm:pb-16">
-          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-brand-200 sm:text-sm">
-            Atención a distancia
-          </p>
-          <h1 className="mt-3 max-w-3xl font-display text-4xl font-bold leading-tight tracking-tight text-white sm:text-5xl md:text-6xl">
-            Telemedicina Veterinaria Online
-          </h1>
-          <p className="mt-4 max-w-2xl font-display text-lg font-semibold text-white sm:text-xl md:text-2xl">
-            Consultas veterinarias online desde cualquier lugar
-          </p>
-          <p className="mt-4 max-w-xl text-sm leading-relaxed text-white/80 sm:text-base">
-            Solicitá una consulta veterinaria online completando el formulario.
-            El equipo de EcoVet revisa cada caso y se comunica con vos para
-            coordinar la modalidad de atención.
-          </p>
-          <div className="mt-8 flex w-full flex-col gap-2.5 sm:w-auto sm:flex-row sm:flex-wrap sm:gap-3">
-            <a href="#solicitud" className="w-full sm:w-auto">
-              <Button size="lg" className="w-full sm:w-auto">
-                Solicitar consulta online
-              </Button>
-            </a>
-            <a href="#como-funciona" className="w-full sm:w-auto">
-              <Button
-                size="lg"
-                variant="outline"
-                className="w-full border-white/30 bg-white/10 text-white hover:bg-white hover:text-ink sm:w-auto"
-              >
-                ¿Cómo funciona?
-              </Button>
-            </a>
+      <section className="relative overflow-hidden bg-ink">
+        <div className="grid lg:grid-cols-2">
+          <div className="relative min-h-[52svh] sm:min-h-[58svh] lg:min-h-[88svh]">
+            <img
+              src={TELEMEDICINE_PHOTO.src}
+              alt={TELEMEDICINE_PHOTO.alt}
+              className="absolute inset-0 h-full w-full object-cover object-center"
+              fetchPriority="high"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-ink/70 via-ink/20 to-ink/10 lg:bg-gradient-to-r lg:from-transparent lg:via-ink/20 lg:to-ink/80" />
+          </div>
+          <div className="relative flex flex-col justify-center px-5 py-10 sm:px-8 sm:py-14 lg:py-16">
+            <div className="container-page mx-0 max-w-xl px-0">
+              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-brand-200 sm:text-sm">
+                Atención a distancia
+              </p>
+              <h1 className="mt-3 font-display text-4xl font-bold leading-tight tracking-tight text-white sm:text-5xl md:text-6xl">
+                Telemedicina Veterinaria Online
+              </h1>
+              <p className="mt-4 font-display text-lg font-semibold text-white sm:text-xl md:text-2xl">
+                Consultas veterinarias online desde cualquier lugar
+              </p>
+              <p className="mt-4 text-sm leading-relaxed text-white/80 sm:text-base">
+                Solicitá una consulta veterinaria online completando el formulario.
+                El equipo de EcoVet revisa cada caso y se comunica con vos para
+                coordinar la modalidad de atención.
+              </p>
+              <div className="mt-8 flex w-full flex-col gap-2.5 sm:w-auto sm:flex-row sm:flex-wrap sm:gap-3">
+                <a href="#solicitud" className="w-full sm:w-auto">
+                  <Button size="lg" className="w-full sm:w-auto">
+                    Solicitar consulta online
+                  </Button>
+                </a>
+                <a href="#como-funciona" className="w-full sm:w-auto">
+                  <Button
+                    size="lg"
+                    variant="outline"
+                    className="w-full border-white/30 bg-white/10 text-white hover:bg-white hover:text-ink sm:w-auto"
+                  >
+                    ¿Cómo funciona?
+                  </Button>
+                </a>
+              </div>
+            </div>
           </div>
         </div>
       </section>

@@ -7,6 +7,7 @@ import {
   KeyRound,
   LayoutDashboard,
   LogOut,
+  Mail,
   Menu,
   MessageSquareQuote,
   Settings,
@@ -17,15 +18,17 @@ import {
   X,
 } from 'lucide-react'
 import { useEffect, useState } from 'react'
-import { NavLink, Navigate, Outlet } from 'react-router-dom'
+import { NavLink, Navigate, Outlet, useLocation } from 'react-router-dom'
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner'
 import { useAuth } from '@/contexts/AuthContext'
 import { cn } from '@/lib/utils'
+import { fetchContactMessages } from '@/services/firestore'
 
 const links = [
   { to: '/admin', label: 'Dashboard', icon: LayoutDashboard, end: true },
   { to: '/admin/reservas', label: 'Reservas', icon: CalendarDays },
   { to: '/admin/telemedicina', label: 'Telemedicina', icon: Video },
+  { to: '/admin/mensajes', label: 'Mensajes', icon: Mail },
   { to: '/admin/servicios', label: 'Servicios', icon: Stethoscope },
   { to: '/admin/equipo', label: 'Equipo', icon: Users },
   { to: '/admin/galeria', label: 'Galería', icon: ImageIcon },
@@ -40,7 +43,9 @@ const links = [
 
 export function AdminLayout() {
   const { user, loading, isAdmin, logout } = useAuth()
+  const { pathname } = useLocation()
   const [menuOpen, setMenuOpen] = useState(false)
+  const [unreadMessages, setUnreadMessages] = useState(0)
 
   useEffect(() => {
     document.body.style.overflow = menuOpen ? 'hidden' : ''
@@ -48,6 +53,15 @@ export function AdminLayout() {
       document.body.style.overflow = ''
     }
   }, [menuOpen])
+
+  useEffect(() => {
+    if (loading || !user || !isAdmin) return
+    void fetchContactMessages()
+      .then((items) =>
+        setUnreadMessages(items.filter((item) => item.read !== true).length),
+      )
+      .catch(() => setUnreadMessages(0))
+  }, [loading, user, isAdmin, pathname])
 
   if (loading) {
     return (
@@ -93,7 +107,12 @@ export function AdminLayout() {
             }
           >
             <link.icon className="h-4 w-4 shrink-0" />
-            {link.label}
+            <span className="flex-1">{link.label}</span>
+            {link.to === '/admin/mensajes' && unreadMessages > 0 && (
+              <span className="rounded-full bg-brand-500 px-2 py-0.5 text-[11px] font-semibold text-white">
+                {unreadMessages}
+              </span>
+            )}
           </NavLink>
         ))}
       </nav>

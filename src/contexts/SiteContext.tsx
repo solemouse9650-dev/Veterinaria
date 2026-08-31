@@ -155,7 +155,7 @@ function withOfficialSocial(site: SiteInfo): SiteInfo {
     ...site,
     social: {
       facebook: outdated ? seedSite.social.facebook : facebook,
-      instagram: site.social.instagram || seedSite.social.instagram,
+      instagram: seedSite.social.instagram,
     },
   }
 }

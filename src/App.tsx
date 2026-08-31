@@ -29,6 +29,7 @@ import { TestimonialsAdmin } from '@/pages/admin/TestimonialsAdmin'
 import { SiteAdmin } from '@/pages/admin/SiteAdmin'
 import { SecurityAdmin } from '@/pages/admin/SecurityAdmin'
 import { TelemedicineAdmin } from '@/pages/admin/TelemedicineAdmin'
+import { MessagesAdmin } from '@/pages/admin/MessagesAdmin'
 
 export default function App() {
   return (
@@ -56,6 +57,7 @@ export default function App() {
           <Route index element={<AdminDashboard />} />
           <Route path="reservas" element={<ReservationsAdmin />} />
           <Route path="telemedicina" element={<TelemedicineAdmin />} />
+          <Route path="mensajes" element={<MessagesAdmin />} />
           <Route path="servicios" element={<ServicesAdmin />} />
           <Route path="equipo" element={<TeamAdmin />} />
           <Route path="galeria" element={<GalleryAdmin />} />
