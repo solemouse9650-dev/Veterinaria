@@ -176,7 +176,6 @@ export function Telemedicine() {
   const onSubmit = async (data: FormData) => {
     setSubmitError('')
     if ((data.hp_field || '').trim()) {
-      setConfirmation(true)
       return
     }
     try {

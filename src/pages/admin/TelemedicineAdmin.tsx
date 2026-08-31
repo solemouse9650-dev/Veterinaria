@@ -58,6 +58,10 @@ export function TelemedicineAdmin() {
     setLoading(true)
     try {
       setItems(await fetchTelemedicineRequests())
+      setError('')
+    } catch (e) {
+      setItems([])
+      setError(writeErrorMessage(e))
     } finally {
       setLoading(false)
     }
@@ -114,10 +118,14 @@ export function TelemedicineAdmin() {
     setWorking(true)
     setError('')
     try {
-      await updateTelemedicineRequest(id, {
-        ...patch,
-        updatedAt: new Date().toISOString(),
-      })
+      await updateTelemedicineRequest(
+        id,
+        {
+          ...patch,
+          updatedAt: new Date().toISOString(),
+        },
+        selected?.storage,
+      )
       await logActivity('telemedicina', `Solicitud actualizada`)
       await load()
       setSelected((prev) => (prev && prev.id === id ? { ...prev, ...patch } : prev))

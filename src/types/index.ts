@@ -223,4 +223,5 @@ export interface TelemedicineRequest {
   scheduledAt?: string
   consultationMethod?: string
   storage?: 'telemedicine_requests' | 'clients'
+  nativeId?: string
 }

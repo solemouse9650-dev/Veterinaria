@@ -217,6 +217,7 @@ export async function createTelemedicineRequest(
     | 'scheduledAt'
     | 'consultationMethod'
     | 'storage'
+    | 'nativeId'
   >,
 ): Promise<string> {
   if (!db) {
@@ -224,33 +225,46 @@ export async function createTelemedicineRequest(
       'No se pudo enviar la solicitud. Escribinos por WhatsApp para coordinar la consulta.',
     )
   }
+
+  let nativeId = ''
   try {
     const ref = await addDoc(
       collection(requireDb(), 'telemedicine_requests'),
       data as DocumentData,
     )
-    return ref.id
+    nativeId = ref.id
   } catch (error) {
     const code =
       typeof error === 'object' && error && 'code' in error
         ? String((error as { code: string }).code)
         : ''
     if (code !== 'permission-denied') throw error
+  }
+
+  try {
     const ref = await addDoc(collection(requireDb(), 'clients'), {
       name: data.ownerName,
       email: data.email,
       phone: data.phone,
-      message: encodeTelemedicineFallback(data),
+      message: encodeTelemedicineFallback({
+        ...data,
+        nativeId: nativeId || undefined,
+      }),
       type: 'contact',
       createdAt: data.createdAt,
     })
-    return ref.id
+    return nativeId || ref.id
+  } catch (error) {
+    if (nativeId) return nativeId
+    throw error
   }
 }
 
 export async function fetchTelemedicineRequests(): Promise<TelemedicineRequest[]> {
   if (!db) return []
   const native: TelemedicineRequest[] = []
+  const fallbacks: TelemedicineRequest[] = []
+
   try {
     const snap = await getDocs(collection(requireDb(), 'telemedicine_requests'))
     native.push(
@@ -264,15 +278,29 @@ export async function fetchTelemedicineRequests(): Promise<TelemedicineRequest[]
       ),
     )
   } catch {
-    // Rules may still omit this collection; inbox uses the contact fallback.
+    // Admin read of this collection may still be denied in production rules.
   }
 
-  const fallbacks = (await fetchContactMessages(true))
-    .map((item) => parseTelemedicineFallback(item))
-    .filter((item): item is TelemedicineRequest => Boolean(item))
+  try {
+    const parsed = (await fetchContactMessages(true))
+      .map((item) => parseTelemedicineFallback(item))
+      .filter((item): item is TelemedicineRequest => Boolean(item))
+    fallbacks.push(...parsed)
+  } catch {
+    // Keep native results even if the contact inbox cannot be read.
+  }
 
-  const seen = new Set(native.map((item) => item.id))
-  return [...native, ...fallbacks.filter((item) => !seen.has(item.id))].sort(
+  const nativeIds = new Set(native.map((item) => item.id))
+  const nativeKeys = new Set(
+    native.map((item) => `${item.email}|${item.createdAt}`),
+  )
+  const uniqueFallbacks = fallbacks.filter((item) => {
+    if (item.nativeId && nativeIds.has(item.nativeId)) return false
+    if (nativeKeys.has(`${item.email}|${item.createdAt}`)) return false
+    return true
+  })
+
+  return [...native, ...uniqueFallbacks].sort(
     (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
   )
 }
@@ -290,6 +318,7 @@ export async function updateTelemedicineRequest(
       | 'updatedAt'
     >
   >,
+  storage?: TelemedicineRequest['storage'],
 ) {
   const clean: Record<string, unknown> = {}
   for (const [key, value] of Object.entries(data)) {
@@ -298,14 +327,18 @@ export async function updateTelemedicineRequest(
     }
   }
   if (!Object.keys(clean).length) return
+  const collectionName =
+    storage === 'clients' ? 'clients' : 'telemedicine_requests'
   try {
-    await updateDoc(doc(requireDb(), 'telemedicine_requests', id), clean)
+    await updateDoc(doc(requireDb(), collectionName, id), clean)
   } catch (error) {
     const code =
       typeof error === 'object' && error && 'code' in error
         ? String((error as { code: string }).code)
         : ''
-    if (code !== 'permission-denied' && code !== 'not-found') throw error
+    if (collectionName === 'clients' || (code !== 'permission-denied' && code !== 'not-found')) {
+      throw error
+    }
     await updateDoc(doc(requireDb(), 'clients', id), clean)
   }
 }

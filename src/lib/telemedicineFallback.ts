@@ -3,6 +3,7 @@ import type { ContactMessage, TelemedicineRequest } from '@/types'
 export const TELEMEDICINE_FALLBACK_PREFIX = '[EcoVet Telemedicina]'
 
 type Meta = {
+  nativeId?: string
   country: string
   city: string
   countryCode: string
@@ -15,21 +16,17 @@ type Meta = {
   consultationReason: string
   durationNote: string
   additionalInformation?: string
-  status?: string
-  adminNotes?: string
-  contactedAt?: string
-  scheduledAt?: string
-  consultationMethod?: string
 }
 
 export function isTelemedicineFallbackMessage(message: string) {
-  return message.startsWith(TELEMEDICINE_FALLBACK_PREFIX)
+  return (message || '').startsWith(TELEMEDICINE_FALLBACK_PREFIX)
 }
 
 export function encodeTelemedicineFallback(
-  data: Omit<TelemedicineRequest, 'id' | 'storage'>,
+  data: Omit<TelemedicineRequest, 'id' | 'storage'> & { nativeId?: string },
 ) {
   const meta: Meta = {
+    nativeId: data.nativeId,
     country: data.country,
     city: data.city,
     countryCode: data.countryCode,
@@ -41,16 +38,12 @@ export function encodeTelemedicineFallback(
     sex: data.sex,
     consultationReason: data.consultationReason,
     durationNote: data.durationNote,
-    additionalInformation: data.additionalInformation,
-    status: data.status,
-    adminNotes: data.adminNotes,
-    contactedAt: data.contactedAt,
-    scheduledAt: data.scheduledAt,
-    consultationMethod: data.consultationMethod,
+    additionalInformation: (data.additionalInformation || '').slice(0, 180),
   }
-  const head = `${TELEMEDICINE_FALLBACK_PREFIX}${JSON.stringify(meta)}\n`
-  const body = data.description || ''
-  return `${head}${body}`.slice(0, 2000)
+  const json = JSON.stringify(meta)
+  const head = `${TELEMEDICINE_FALLBACK_PREFIX}${json}\n`
+  const body = (data.description || '').slice(0, Math.max(0, 2000 - head.length))
+  return `${head}${body}`
 }
 
 export function parseTelemedicineFallback(
@@ -59,7 +52,7 @@ export function parseTelemedicineFallback(
   if (!isTelemedicineFallbackMessage(doc.message)) return null
   const raw = doc.message.slice(TELEMEDICINE_FALLBACK_PREFIX.length)
   const split = raw.indexOf('\n')
-  const metaText = split === -1 ? raw : raw.slice(0, split)
+  const metaText = (split === -1 ? raw : raw.slice(0, split)).trim()
   const description = split === -1 ? '' : raw.slice(split + 1)
   let meta: Meta
   try {
@@ -67,10 +60,11 @@ export function parseTelemedicineFallback(
   } catch {
     return null
   }
+  const rawStatus = doc.status || 'pendiente'
   const status = (
     ['pendiente', 'contactado', 'coordinando', 'confirmado', 'realizado', 'cancelado'] as const
-  ).includes((doc.status || meta.status) as TelemedicineRequest['status'])
-    ? ((doc.status || meta.status) as TelemedicineRequest['status'])
+  ).includes(rawStatus as TelemedicineRequest['status'])
+    ? (rawStatus as TelemedicineRequest['status'])
     : 'pendiente'
   return {
     id: doc.id,
@@ -95,10 +89,11 @@ export function parseTelemedicineFallback(
     updatedAt: doc.createdAt,
     termsAccepted: true,
     contactConsent: true,
-    adminNotes: doc.adminNotes || meta.adminNotes,
-    contactedAt: doc.contactedAt || meta.contactedAt,
-    scheduledAt: doc.scheduledAt || meta.scheduledAt,
-    consultationMethod: doc.consultationMethod || meta.consultationMethod,
+    adminNotes: doc.adminNotes,
+    contactedAt: doc.contactedAt,
+    scheduledAt: doc.scheduledAt,
+    consultationMethod: doc.consultationMethod,
     storage: 'clients',
+    nativeId: meta.nativeId,
   }
 }
