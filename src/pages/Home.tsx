@@ -42,8 +42,8 @@ export function Home() {
       <section ref={heroRef} className="relative min-h-[100svh] overflow-hidden">
         <motion.div style={{ y }} className="absolute inset-0">
           <img
-            src={CLINIC_PHOTOS[1].src}
-            alt={CLINIC_PHOTOS[1].alt}
+            src={CLINIC_PHOTOS[0].src}
+            alt={CLINIC_PHOTOS[0].alt}
             className="h-full w-full object-cover object-center"
             fetchPriority="high"
           />
